@@ -1,0 +1,79 @@
+--- 
+title: "Programando em Shiny"
+date: "Última atualização: `r Sys.Date()`"
+site: bookdown::bookdown_site
+documentclass: book
+bibliography: [book.bib, packages.bib]
+biblio-style: apalike
+link-citations: yes
+description: "This is a minimal example of using the bookdown package to write a book. The output format for this example is bookdown::gitbook."
+---
+
+# Boas-vindas {-}
+
+Este é um livro em desenvolvimento. Toda contribuição, da correção de erros ortográficos a sugestões de novos conteúdos, serão bem-vindas.
+
+O conteúdo aqui presente se destina a:
+
+- pessoas que programam em linguagem R e gostaríam de começar a programar em Shiny.
+
+- pessoas que programam em Shiny e gostariam de se aprofundar no conceito de reatividade.
+
+- pessoas que programam em Shiny e gostariam de aprender a personalizar a interface de usuários de seus aplicativos.
+
+#### O que é o Shiny? {-}
+
+Shiny é um framework em linguagem R para a criação de aplicativos web. Por não exigir conhecimento prévio de HTML, CSS e JavaScript, ele democratiza o acesso a essa área de desenvolvimento, permitindo a criação de aplicativos bonitos e complexos a partir de um script R.
+
+#### Por que aprender Shiny? {-}
+
+Por ser gratuito e pela simplicidade na construção de aplicativos, o Shiny vem sendo cada vez mais utilizado por empresas e por órgãos do governo para acomodar painéis analíticos ou para comunicar resultados de maneira interativa e dinâmica. Programar em Shiny se tornou um grande diferencial para cientistas de dados.
+
+Nas universidades, o Shiny já é uma poderosa ferramenta de ensino, que substitui apresentações de dezenas de slides por apenas uma única tela interativa. Também é muito útil para a explicação de conceitos estatísticos, além de incentivar estudantes a aprenderem a programar. Na pesquisa, o Shiny facilita a colaboração entre cientistas de diferentes áreas e é uma excelente alternativa para aumentar e melhorar a comunicação científica.
+
+#### Quais são os limites do Shiny? {-}
+
+O Shiny fornece uma estrutura para gerarmos código HTML a partir de funções em R. Também possui uma base de JavaScript e CSS para deixar os aplicativos funcionais e com um visual satisfatório. Além disso, podemos utilizar por trás todo o poderio de análise de dados que o R e seus pacotes fornecem. Com esses elementos, já conseguimos construir qualquer tipo de layout e lógica interna que quisermos. 
+
+Contudo, o grande poder do Shiny está em não limitar seu uso apenas à estrutura base. Existem vários outros pacotes criados pela comunidade que trazem mais elementos visuais e funcionais para o Shiny, diminuindo ainda mais a necessidade de conhecermos HTML, CSS e JavaScript. E, se você tem conhecimento dessas linguagens, o céu é o limite! É muito simples incluir *tags* HTML, folhas de estilo CSS e suas próprias funções JavaScript em um aplicativo Shiny.
+
+
+#### O que você vai aprender neste livro? {-}
+
+Se você nunca programou em R, Shiny não é o assunto mais didático para se começar. Este livro assume que você já tem um conhecimento base de R, do operador *pipe* (`%>%`) e dos principais pacotes do tidyverse (`readr`, `dplyr`, `tidyr`,`ggplot2`, `stringr` e `lubridate`). Recomendamos, de início, a leitura do livro [Ciência de Dados em R](https://livro.curso-r.com/).
+
+Se você já programa em R e gostaria de começar a programar em Shiny, você pode iniciar a leitura desde o Capítulo 1. Você irá aprender, sobretudo
+
+- como construir interfaces de usuário (UI);
+
+- como construir a lógica interna do app (server);
+
+- o conceito de reatividade, para deixar seu app dinâmico;
+
+- boas práticas de programação em Shiny.
+
+
+Se você já programa em Shiny e gostaria de se aprofundar no tema, tanto para aprender técnicas para customizar o visual do seu aplicativo, quanto para aprender mais sobre reatividade e como o Shiny funciona por trás das cortinas, você pode iniciar no Capítulo XX. A partir desse capítulo, vamos
+
+- utilizar módulos para organizar a construção de aplicativos grandes e complexos;
+
+- aprender uma base de HTML, CSS e JavaScript para começar a desenvolver suas próprias funcionalidades;
+
+- virar mestres em reatividade para permitir interações ainda mais finas entre o usuário e nosso aplicativo.
+
+#### O que eu preciso para começar a aprender Shiny? {-}
+
+Antes de mais nada, participe das comunidades! Compartilhe seu desenvolvimento. Poste seus avanços nas redes sociais e compartilhe suas dúvidas em fóruns. *You'll never walk alone*^[*Você nunca andará sozinho*, lema do Liverpool Football Club, um dos times mais populares da Inglaterra. A frase teve origem na música de mesmo nome composta por Richard Rodgers e Oscar Hammerstein em 1945, considerada hino do clube inglês.].
+
+- Comunidade RLadies: https://benubah.github.io/r-community-explorer/rladies.html
+- Fórum de dúvidas da Curso-R: https://discourse.curso-r.com/
+- AI inclusive: https://www.ai-inclusive.org/
+- Grupo R Brasil no Telegram: https://t.me/rbrasiloficial
+
+Você também precisará:
+
+- conhecimento básico de R (ver seção anterior);
+- computador com últimas versões do [R](
+The Comprehensive R Archive Networkcran.r-project.org
+) e do [RStudio](https://rstudio.com/products/rstudio/download/) instaladas;
+- acesso à internet.

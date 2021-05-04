@@ -1,0 +1,25 @@
+# Sobre este livro {-}
+
+Este livro foi escrito em [R Markdown](https://rmarkdown.rstudio.com/) com o pacote [{bookdown}](https://bookdown.org/) e está em construção e em revisão aberta. Fique à vontade para corrigir qualquer tipo de erro que encontrar no nosso material.
+
+O texto deste livro foi eleborado por [William Amorim](https://wamorim.com/) com  o suporte, ajuda e revisão do time da [Curso-R](https://www.curso-r.com/). Ele está disponível gratuitamente no Github sob a licença [GNU GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html).
+
+A Curso-R é o braço de Educação da R6 Consultoria, uma empresa de treinamentos e consultoria em Ciência de Dados e linguagem de programação R. 
+
+- Conheça os nossos cursos: https://www.curso-r.com/cursos/
+- Conheça o nosso blog: https://www.curso-r.com/blog/
+- Conheça o restante do nosso material: https://www.curso-r.com/material/
+- Conheça nossos outros livros:
+  - Ciência de Dados em R: https://livro.curso-r.com/
+  - Zen do R: https://curso-r.github.io/zen-do-r/
+  
+Participaram da construção deste livro:
+
+- [Athos Damiani](https://twitter.com/athos_damiani)
+- [Caio Lente](https://lente.dev/)
+- [Daniel Falbel](https://twitter.com/dfalbel)
+- [Fernando Correa](https://twitter.com/Azeloc)
+- [Julio Tricenti](https://twitter.com/jtrecenti)
+- [William Amorim](https://wamorim.com/)
+
+
