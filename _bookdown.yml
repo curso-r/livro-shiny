@@ -1,5 +1,8 @@
 book_filename: "livro-shiny"
 delete_merged_file: true
 language:
+  label:
+    fig: "Figura "
+    tab: "Tabela "
   ui:
     chapter_name: "Capítulo "

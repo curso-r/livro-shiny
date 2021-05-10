@@ -1,3 +1,10 @@
+```{r}
+knitr::opts_chunk$set(
+  fig.align = "center"
+)
+```
+
+
 # Seu primeiro aplicativo Shiny
 
 Neste capítulo, vamos descobrir o que é exatamente um aplicativo Shiny e o que ele precisa para funcionar. Vamos construir e rodar o nosso primeiro app, mostrando os componentes básicos existentes em qualquer aplicativo Shiny. Também daremos a nossa primeira olhadela no conceito de reatividade, um paradigma de programação diferente do que estamos acostumados na linguagem R e essencial para o Shiny funcionar adequadamente.
