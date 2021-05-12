@@ -18,19 +18,19 @@ Na próxima seção, mostraremos como todos esses elementos de um aplicativo Shi
 
 ## Os componentes básicos
 
-Se dividirmos a construção de um aplicativo Shiny em duas partes, uma delas seria a construção do código HTML. Você precisa determinar explicitamente quais são e onde ficam as paredes do seu app. Isso quer dizer que, sempre que programar um Shiny app, você terá programado ao menos em HTML^[Assim como toda casa precisa de alguma estrutura física, não faz sentido pensarmos em CSS e JavaScript sem o HTML. Podemos construir um site apenas em HTML, mas sem ele não temos onde aplicar o CSS e o JavaScript.], mesmo que sem saber.
+Um aplicativo Shiny tem dois componentes básicos: a **interface de usuário** e o **servidor**.
+
+O primeiro componente se refere à construção do código HTML que compõe o app. Retomando a analogia da casa, você precisa determinar explicitamente quais são e onde ficam *as paredes* do seu aplicativo. Isso quer dizer que, sempre que programar um Shiny app, você terá programado ao menos em HTML^[Assim como toda casa precisa de alguma estrutura física, não faz sentido pensarmos em CSS e JavaScript sem o HTML. Podemos construir um site apenas em HTML, mas sem ele não temos onde aplicar o CSS e o JavaScript.], mesmo que sem saber.
 
 A princípio, você não precisará se preocupar com CSS, pois a aparência padrão do Shiny^[Isto é, o código CSS que o Shiny já utiliza por padrão.] já é bem aceitável. O mesmo vale para o JavaScript: quando você programa em Shiny, todo o JavaScript necessário para o seu app funcionar corretamente já está pronto e será utilizado automaticamente.
 
-Podemos pensar na programação desse código HTML como a construção daquilo que será mostrado na tela, a cara do seu app, a **UI** (sigla para o termo *user interface*, em inglês). Das definições apresentadas na seção anterior, a UI corresponde à página web. A figura a seguir mostra a UI de um app bem simples, que permite a escolha de duas variáveis e apresenta um gráfico de dispersão delas:
+Podemos pensar na programação desse código HTML como a construção daquilo que será mostrado na tela, a cara do seu app, a interface de usuário ou **UI** (sigla para o termo *user interface*, em inglês). Das definições apresentadas na seção anterior, a UI corresponde à página web. A figura a seguir mostra a UI de um app bem simples, que permite a escolha de duas variáveis e apresenta o gráfico de dispersão delas:
 
 ```{r, echo = FALSE, fig.cap="UI de um app simples.", fig.alt = "UI de um app simples."}
-knitr::include_graphics("exemplos/penguins-dispersao/app.png")
+knitr::include_graphics("img/app._penguins_disp.png")
 ```
 
-Mas como criamos esse código HTML sem saber HTML? A resposta é simples: utilizando funções do R que retornam código HTML. Esse é um dos papéis do pacote `{shiny}` e um dos desafios da programação em Shiny. Não precisaremos aprender HTML formalmente, mas precisaremos aprender quais funções utilizar para construir uma UI bem estruturada.
-
-A segunda parte da construção de um aplicativo Shiny é aquilo não será visto por quem utilizar o app: o **servidor**. O lado do servidor (*server side* ou simplesmente *server*, em inglês) contém toda a lógica para a construção das saídas apresentadas na UI. Na figura anterior, o código que gera o gráfico de dispersão fica dentro do servidor.
+O segundo componente se refere àquilo que não será visto por quem utilizar o app: o **servidor**. O lado do servidor (*server side* ou simplesmente *server*, em inglês) contém toda a lógica para a construção das visualizações apresentadas na UI. Na figura anterior, o código que gera o gráfico de dispersão fica dentro do servidor.
 
 Embora precisemos aprender alguns conceitos e regras novas, a maior parte do código que compõe o servidor é aquele bom e velho R que já utilizamos no dia-a-dia para gerar tabelas, gráficos e qualquer outro tipo de visualização. Em resumo, para fazer um ggplot aparecer no Shiny, basta adaptar o código que gera esse gráfico para receber as entradas de quem estiver usando o app (*inputs*) e devolver o resultado (*output*) no *lugar* adequado.
 
@@ -40,8 +40,60 @@ A UI e o servidor são os dois componentes básicos de um aplicativo Shiny. Embo
 knitr::include_graphics("img/esquema_ui_servidor.png")
 ```
 
-Na próxima seção, vamos mostrar como colocar tudo isso dentro do código, apresentando como construímos a UI e o servidor utilizando o pacote `{shiny}`.
+Você pode acessar o app utilizado como exemplo nesta seção [clicando aqui](https://cursodashboards.shinyapps.io/penguins-dispersao/). Dado o esquema apresentado na figura anterior, tente imaginar o que está acontecendo sempre que você seleciona uma nova variável dentro do app. Como o novo gráfico é gerado? Qual é o papel do servidor? Como ele se comunica com a UI que você está vendo?
+
+Na próxima seção, vamos começar a responder essas perguntas mostrando como construímos a UI e o servidor de um Shiny app utilizando o pacote `{shiny}`.
 
 ## Estrutura de um código Shiny
+
+O código de qualquer aplicativo Shiny terá a estrutura abaixo:
+
+- um objeto chamado `ui`;
+
+- uma função chamada `server`;
+
+- e uma chamada da função `shinyApp()`.
+
+
+Dada essa estrutura, o código a seguir representa um dos aplicativos mais simples que podemos construir:
+
+```{r, eval=FALSE}
+library(shiny)
+
+ui <- fluidPage("Olá, mundo!")
+
+server <- function(input, output, session) {
+  
+}
+
+shinyApp(ui, server)
+```
+
+Esse código resultará no *aplicativo* com a seguinte UI:
+
+```{r, echo = FALSE}
+knitr::include_graphics("img/app_ola_mundo.png")
+```
+
+Vejam que a UI se trata apenas de uma página de fundo branco com a frase "Olá, mundo!" escrita no canto superior esquerdo. O app não possui nenhuma interatividade.
+
+Na seção anterior, dissemos que a construção da UI corresponde à construção do código HTML que compõe o aplicativo. Fazemos isso utilizando funções do R que retornam HTML. Esse é um dos papéis do pacote `{shiny}` e um dos desafios da programação em Shiny. **Não precisaremos aprender HTML formalmente, mas precisaremos aprender quais funções utilizar para construir uma UI bem estruturada**.
+
+Olhando o código anterior, encontramos a frase "Olá, mundo!" na definição do objeto `ui`, dentro da função `fluidPage()`. Essa função do pacote `{shiny}` é uma entre várias que utilizaremos para retornar código HTML. Falaremos mais dela no próximo capítulo.
+
+O importante por enquanto é sabermos que **o objeto `ui` é responsável por receber todo o código HTML do nosso aplicativo**, código que será criado a partir de funções em R que retornam HTML.
+
+Também dissemos anteriormente que o servidor é responsável por conectar os *inputs* e *outputs* do aplicativo receber os códigos que geram as visualizações apresentadas na UI. No código, isso sempre será feito dentro de uma função chamada `server`. 
+
+A função `server` sempre receberá os argumentos `input`, `output` e `session`^[O argumento `session` pode ser omitido em alguns casos. Falaremos mais sobre isso no Capítulo XXX]. A partir desses argumentos, montaremos a lógica interativa (ou reativa, guarde esse nome) do app. O código que gera as visualizações será escrito dentro dessa função. Como o nosso app *Olá, mundo!* não possui visualizações ou interatividade, a sua função `server` está vazia^[A função `server` sempre precisa existir, mesmo neste caso quando não há interatividade].
+
+Embora o nosso aplicativo não possua nenhuma interatividade, a estrutura necessária para que a interatividade aconteça ainda assim é criada pelo Shiny.
+
+Essa estrutura é a comunicação da UI (ou do nosso navegador) com o servidor. Sempre que rodarmos um aplicativo Shiny, teremos uma sessão do R funcionando por trás. Essa sessão de R é responsável por atualizar as visualizações apresentadas na UI, sempre que alguém interagir com o app.
+
+
+
+No 
+
 
 ## Rodando um aplicativo
