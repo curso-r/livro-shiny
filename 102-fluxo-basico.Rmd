@@ -88,7 +88,7 @@ ui <- fluidPage("Olá, mundo!")
 
 O importante por enquanto é sabermos que **o objeto `ui` é responsável por receber todo o código HTML do nosso aplicativo**, código que será criado a partir de funções em R que retornam HTML.
 
-A função `server` sempre receberá os argumentos `input`, `output` e `session`^[O argumento `session` pode ser omitido em alguns casos. Falaremos mais sobre isso no Capítulo XXX]. A partir desses argumentos, montaremos a lógica interativa (ou reativa, guarde esse nome) do app. O código que gera as visualizações será escrito dentro dessa função. Como o nosso app *Olá, mundo!* não possui visualizações ou interatividade, a sua função `server` está vazia^[A função `server` sempre precisa existir, mesmo neste caso quando não há interatividade].
+A função `server` sempre receberá os argumentos `input`, `output` e `session`^[O argumento `session` pode ser omitido em alguns casos. Falaremos mais sobre isso no Capítulo XXX]. A partir desses argumentos, montaremos a lógica interativa (ou reativa, guarde esse nome) do app. O código que gera as visualizações será escrito dentro dessa função. Como o nosso app *Olá, mundo!* não possui visualizações ou interatividade, a sua função `server` está vazia^[A função `server` sempre precisa existir, mesmo neste caso, quando não há interatividade].
 
 ```{r}
 server <- function(input, output, session) {
@@ -140,7 +140,7 @@ Para liberar a sessão, basta clicar no botão "*stop*", na parte de cima do Con
 knitr::include_graphics("img/console_sessao_ocupada.png")
 ```
 
-No console, após rodarmos o R, também aparecerá uma mensagem idenficicando o *endereço* do nosso aplicativo. Nesse caso, será um IP (`http://127.0.0.1`)^[Esse número de IP é padrão e significa "este computador".] com alguma porta que esteja disponível escolhida aleatoriamente (`:4028`). Esse endereço aparecerá no nosso navegador e poderemos copiá-lo e colá-lo em qualquer outra aba ou navegador que quisermos rodar o app.
+No console, após rodarmos o R, também aparecerá uma mensagem idenficicando o *endereço* do nosso aplicativo. Nesse caso, será um IP (`http://127.0.0.1`)^[Esse número de IP é padrão e significa "o seu computador".] com alguma porta que esteja disponível escolhida aleatoriamente (`:4028`). Esse endereço aparecerá no nosso navegador e poderemos copiá-lo e colá-lo em qualquer outra aba ou navegador que quisermos rodar o app.
 
 
 
