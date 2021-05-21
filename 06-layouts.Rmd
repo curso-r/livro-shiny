@@ -1,0 +1,17 @@
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  fig.align = "center"
+)
+```
+
+# Layouts
+
+## Um pouco sobre HTML
+
+## Bootstrap
+
+## Layouts prontos
+
+### `sidebarLayout()`
+
+### `navbarPage()`

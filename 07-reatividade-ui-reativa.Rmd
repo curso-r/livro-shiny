@@ -1,0 +1,14 @@
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  fig.align = "center"
+)
+```
+
+# Reatividade: UIs reativas
+
+## Construindo UIs dinamicamente
+
+## Funções update
+
+## Validação
+

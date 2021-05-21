@@ -1,0 +1,19 @@
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  fig.align = "center"
+)
+```
+
+# Reatividade: conceitos básicos
+
+## O que é reatividade?
+
+## Valores e funções reativas
+
+## Diagrama de reatividade: `reaclog`
+
+## Funções `render`
+
+## `reactive` e `eventReactive`
+
+## `observe` e `observEvent`

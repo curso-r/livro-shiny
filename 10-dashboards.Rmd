@@ -1,0 +1,12 @@
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  fig.align = "center"
+)
+```
+
+# Dashboards
+
+## `shinydashboard`
+
+## `bs4Dash`
+

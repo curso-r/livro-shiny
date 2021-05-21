@@ -1,0 +1,15 @@
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  fig.align = "center"
+)
+```
+
+# Debug: principais erros
+
+## Erros comuns de programação em R
+
+## Erros de sintaxe do Shiny
+
+## Erros de reatividade
+
+## Violação de preceitos do Shiny

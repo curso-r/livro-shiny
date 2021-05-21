@@ -1,0 +1,12 @@
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  fig.align = "center"
+)
+```
+
+# Debug: encontrando erros
+
+## O bom e velho método `print`
+
+## A função `browser()`
+

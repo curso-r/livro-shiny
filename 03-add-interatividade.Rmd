@@ -1,0 +1,13 @@
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  fig.align = "center"
+)
+```
+
+# Adicionando interatividade
+
+## Adicionando outputs
+
+## Adicionando inputs
+
+## Importando bases de dados externas

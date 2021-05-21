@@ -1,0 +1,16 @@
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  fig.align = "center"
+)
+```
+
+# Miscelânea
+
+## Caixas de diálogo
+
+## Tooltips
+
+## Ícones de carregamento
+
+## Markdown
+
