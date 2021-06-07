@@ -2,12 +2,101 @@
 knitr::opts_chunk$set(
   fig.align = "center"
 )
+library(magrittr)
 ```
 
 # Adicionando interatividade
 
+A interatividade de um aplicativo Shiny é dada pela relação de *inputs* e *outputs*. Os inputs permitem que a pessoa usando o aplicativo envie valores para o servidor, que podem ser utilizados na construção dos outputs, isto é, nas visualizações do nosso app.
+
+A seguir, mostraremos como adicionar inputs e outputs a um Shiny app. Começaremos com os outputs para darmos nossos primeiros passos na construção da função `server`.
+
 ## Adicionando outputs
+
+Outputs representam as *saídas* do nosso aplicativo, isto é, tudo que queremos que nosso código R retorne para quem estiver usando o app. Essas saídas podem ser tabelas, gráficos, mapas, texto, imagens ou qualquer outro elemento HTML.
+
+Os outputs são definidos na UI e criados no server. Cada tipo de output é definido por uma função do tipo `*Output()`. Veja as principais funções dessa família:
+
+```{r, echo = FALSE}
+tibble::tribble(~Função, ~`Saída`,
+                "plotOutput()", "Gráficos",
+                "tableOutput()", "Tabelas",
+                "textOutput()", "Textos") %>%
+  knitr::kable(format = "html")
+```
+
+Essas funções especificam **onde** os outputs serão colocados  dentro da UI. Elas não especificam **como** eles serão criados. Para isso, utilizamos as funções do tipo `render*()`, responsáveis por definir o código R que gera cada output. Além disso, elas *renderizam* os resultados desses códigos para HTML, possibilitando que essas visualizações sejam inseridas na UI. Na grande maioria dos casos, teremos o par `visualizacaoOutput()` `renderVisualizacao()`. 
+
+Veja a seguir as principais funções `render*()` e como elas se comunicam com as funções `*Output()`.
+
+```{r, echo = FALSE}
+tibble::tribble(~`*Output()`, ~`render*()`,
+                "plotOutput()", "renderPlot()",
+                "tableOutput()", "renderTable()",
+                "textOutput()", "renderText()") %>%
+  knitr::kable(format = "html")
+```
+
+O argumento `outputId` das funções `*Output()` é utilizado para identificarmos cada output dentro da função `server`. Todos os outputs criados ficarão dentro da lista `output`. Veja a seguir, o exemplo de um aplicativo que apresenta um histograma da variável `mpg` da base `mtcars`.
+
+```{r, eval=FALSE}
+library(shiny)
+
+ui <- fluidPage(
+  "Histograma da variável mpg",
+  plotOutput(outputId = "histograma")
+)
+
+server <- function(input, output, session) {
+  
+  output$histograma <- renderPlot({
+    hist(mtcars$mpg)
+  })
+  
+}
+
+shinyApp(ui, server)
+```
+
+No código acima:
+
+- a função `plotOutput()` especifica o lugar na UI será colocado o histograma (no caso, logo abaixo do texto `"Histograma da variável mpg"`);
+
+- para criar o histograma, atribuímos o resultado da função `renderPlot()` ao valor `histograma` da lista `output`, mesmo nome dado ao argumento `outputId` na função `plotOutput()`;
+
+- a função `renderPlot()`, assim com qualquer outra função da família `render*()`, recebe como primeiro argumento o código para gerar o output;
+
+- o histograma é gerado com o código `hist(mtcars$mpg)`.
+
+Rode o código anterior para ver o aplicativo resultante. Repare que, embora tenhamos uma visualização sendo construída no servidor, ainda não temos interatividade, isto é, não conseguimos mudar nada no conteúdo dessa visualização. 
+
+Para fechar o ciclo da interatividade, precisamos incluir inputs.
 
 ## Adicionando inputs
 
-## Importando bases de dados externas
+<!-- Inputs permitem que o usuário interaja com o seu aplicativo. Eles são criados no UI com funções (geralmente) do tipo `_Input()` e são utilizados dentro do server para alterar as visualizações. Veja alguns exemplos abaixo e acesse [este link](https://shiny.rstudio.com/gallery/widget-gallery.html) para testar como eles funcionam no navegador. -->
+
+<!-- <center> -->
+<!-- <img src="img/inputs.png", width = "85%"> -->
+<!-- <br> -->
+<!-- Fonte: <a href = http://www.rstudio.com/shiny/>rstudio.com/shiny/</a> -->
+<!-- </center> -->
+
+<!-- Para acessar os inputs dentro da função server, utilizamos a lista `input`. Essa lista guardará todos os inputs criados no UI. -->
+
+<!-- .pull-left[ -->
+<!-- <img src="img/inputvalues.png" width= "100%"> -->
+<!-- ] -->
+
+<!-- .pull-right[ -->
+<!-- <img src="img/sliderinputexample.png" width= "80%"> -->
+<!-- - `input$num` pode ser usado no server para deixar as visualizações dinâmicas. -->
+<!-- ] -->
+<!-- <center> -->
+<!-- Fonte: <a href = http://www.rstudio.com/shiny/>rstudio.com/shiny/</a> -->
+<!-- </center> -->
+
+<!-- - `input$num` é um valor reativo, isto é, ele muda conforme ações do usuário. -->
+
+<!-- - Valores reativos só podem ser utilizados dentro de funções reativas. -->
+
