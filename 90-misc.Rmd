@@ -308,7 +308,7 @@ Nesta seção, vamos mostrar como usar o widget `radioGroupButtons` do pacote `s
 
 Como exemplo, vamos construir um shiny app que mostra um gráfico de barras, um gráfico de linhas ou uma tabela (a depender da escolha da pessoa que estiver usando) do número de gols do Brasileirão^[Campeonato Brasileiro de futebol da Série A.] por temporada.
 
-O primeiro passo é configurar o widget corretamente. Veja abaixo que o segredo é utilizar os argumentos `choiceValues` e `choiceNames`. Para o primeiro, passamos os valores que serão acessados dentro do `server` a depender da escolha na UI (equivalente ao argumento `choices`). Ao segundo, podemos passar tanto textos (que seriam escritos dentro do botão) quanto ícones. Nesse caso, utilizamos ícones da biblioteca [Font Awesome](https://fontawesome.com/), com ajuda da função `shiny::icon()`. Repare também que deixamos o tamanho dos botões um pouco maiores setando o argumento `size = "lg`.
+O primeiro passo é configurar o widget corretamente. Veja abaixo que o segredo é utilizar os argumentos `choiceValues` e `choiceNames`. Para o primeiro, passamos os valores que serão acessados dentro do `server` a depender da escolha na UI (equivalente ao argumento `choices`). Ao segundo, podemos passar tanto textos (que seriam escritos dentro do botão) quanto ícones. Nesse caso, utilizamos ícones da biblioteca [Font Awesome](https://fontawesome.com/), com ajuda da função `shiny::icon()`. Repare também que deixamos o tamanho dos botões um pouco maiores setando o argumento `size = "lg"`.
 
 ```{r, eval = FALSE}
 shinyWidgets::radioGroupButtons(
