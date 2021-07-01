@@ -432,7 +432,7 @@ output$grafico <- renderPlot({
 
 Para gerar a tabela, precisamos apenas de um `renderReactable()`.
 
-```{r}
+```{r, eval = FALSE}
 output$tabela <- reactable::renderReactable({
   tab |>
     reactable::reactable(
