@@ -6,7 +6,19 @@ knitr::opts_chunk$set(
 
 # Reatividade: conceitos básicos
 
+Neste capítulo, falaremos de um tema central para quem deseja construir aplicativos em Shiny: a reatividade.
+
+Primeiro, faremos uma breve introdução explicando o que é reatividade e por que ela é importante no Shiny. Em seguida, falaremos sobre valores e expressões reativdas, isto é, como a reatividade se manifesta dentro dos nossos códigos. As demais seções desse capítulo vão nos ensinar como construir diversos fluxos básicos de reatividade corretamente.
+
 ## O que é reatividade?
+
+Antes de mais nada, é válido ressaltar que nós não precisamos entender o que é reatividade e como ela funciona para usá-la e construir um aplicativo Shiny. Nos capítulos anteriores, construímos alguns aplicativos sem falar explicitamente de reatividade.
+
+Uma pessoa iniciante no Shiny pode decorar como utilizar os valores e expressões reativas e desenvolver diversos tipos de app sem nunca entender como a reatividade funciona. Eu não recomendo esse caminho. 
+
+Dominar o conceito de reatividade nos permite construir apps mais eficientes e sofisticados. Mais do que isso, nos permite evitar cada vez mais os erros de mau uso dos valores e expressões reativas, que nos consomem um bom tempo do dia-a-dia de desenvolvimento. Dominar o conceito de reatividade nos faz melhor em Shiny, e garanto que vale a pena traçar esse caminho desde o início.
+
+https://shiny.rstudio.com/articles/understanding-reactivity.html
 
 ## Valores e funções reativas
 
