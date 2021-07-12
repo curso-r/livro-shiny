@@ -12,7 +12,7 @@ Primeiro, faremos uma breve introdução explicando o que é reatividade e por q
 
 ## O que é reatividade?
 
-Antes de mais nada, é válido ressaltar que nós não precisamos entender o que é reatividade e como ela funciona para usá-la e construir um aplicativo Shiny. Nos capítulos anteriores, construímos alguns aplicativos sem falar explicitamente de reatividade.
+Antes de mais nada, é válido ressaltar que não precisamos entender o que é reatividade e como ela funciona para usá-la e construir um aplicativo Shiny. Nos capítulos anteriores, construímos alguns aplicativos sem falar explicitamente de reatividade.
 
 Uma pessoa iniciante no Shiny pode decorar como utilizar os valores e expressões reativas e desenvolver diversos tipos de app sem nunca entender como a reatividade funciona. Eu não recomendo esse caminho. 
 
