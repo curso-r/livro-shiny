@@ -1,0 +1,19 @@
+# Referências {-}
+
+Abaixo, listamos todas as referências utilizadas na construção deste livro.
+
+### Programação em R {-}
+
+- [Ciência de Dados em R](https://livro.curso-r.com/)
+
+- [R for Data Sciente](https://r4ds.had.co.nz/), do Garrett Grolemund e Hadley Wickham
+
+- [Advanced R](https://adv-r.hadley.nz/), do Hadley Wickham
+
+- [R packages](http://r-pkgs.had.co.nz/intro.html), do Hadley Wickham
+
+### Reatividade
+
+- [Reactivity - An overview](https://shiny.rstudio.com/articles/reactivity-overview.html)
+
+- [How to understand reactivity in R](https://shiny.rstudio.com/articles/understanding-reactivity.html)

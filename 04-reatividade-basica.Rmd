@@ -18,9 +18,16 @@ Uma pessoa iniciante no Shiny pode decorar como utilizar os valores e expressõe
 
 Dominar o conceito de reatividade nos permite construir apps mais eficientes e sofisticados. Mais do que isso, nos permite evitar cada vez mais os erros de mau uso dos valores e expressões reativas, que nos consomem um bom tempo do dia-a-dia de desenvolvimento. Dominar o conceito de reatividade nos faz melhor em Shiny, e garanto que vale a pena traçar esse caminho desde o início.
 
-https://shiny.rstudio.com/articles/understanding-reactivity.html
+## Valores reativos, expressões reativas e *observers*
 
-## Valores e funções reativas
+Reactive values are an implementation of Reactive sources; that is, they are an implementation of that role.
+Reactive expressions are an implementation of Reactive conductors. They can access reactive values or other reactive expressions, and they return a value.
+Observers are an implementation of Reactive endpoints. They can access reactive sources and reactive expressions, and they don’t return a value; they are used for their side effects.
+
+Reactive expressions and observers are similar in that they store expressions that can be executed, but they have some fundamental differences.
+
+Observers (and endpoints in general) respond to reactive flush events, but reactive expressions (and conductors in general) do not. We’ll learn more about flush events in the next section. If you want a reactive expression to execute, it must have an observer as a descendant on the reactive dependency graph.
+Reactive expressions return values, but observers don’t.
 
 ## Diagrama de reatividade: `reaclog`
 
@@ -112,6 +119,17 @@ Você pode aprender mais sobre o funcionamento do `reaclog` [clicando aqui](http
 ## Funções `render`
 
 ## `reactive` e `eventReactive`
+
+Keep in mind that if your application tries to access reactive values or expressions from outside a reactive context — that is, outside of a reactive expression or observer — then it will result in an error. You can think of there being a reactive “world” which can see and change the non-reactive world, but the non-reactive world can’t do the same to the reactive world. Code like this will not work, because the call to fib() is not in the reactive world (it’s not in a reactive() or renderXX() call) but it tries to access something that is, the reactive value input$n:
+
+```{r, eval = FALSE}
+server <- function(input, output) {
+  # Will give error
+  currentFib      <- fib(as.numeric(input$n))
+  output$nthValue <- renderText({ currentFib })
+}
+```
+
 
 ## `observe` e `observEvent`
 
