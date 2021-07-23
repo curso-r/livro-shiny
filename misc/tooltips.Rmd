@@ -1,0 +1,190 @@
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  fig.align = "center"
+)
+```
+
+## Tooltips
+
+*Tooltips* são uma ótima maneira de se comunicar com a pessoa utilizando o seu app, pois permitem passar todo tipo de informação extra e não oculpam espaço da UI.
+
+Essencialmente, elas são textos que só aparecem quando passamos o ponteiro do mouse em algum elemento da tela. Por exemplo, passe o mouse em cima da frase a seguir:
+
+`r tippy::tippy("Passe o mouse aqui!", tooltip = "Olá! Eu sou uma tooptip :)")`aqui.
+
+Existem várias soluções disponíveis para incluirmos *tooltips* em um aplicativo Shiny, entre elas o pacote `tippy`.
+
+Esse pacote está no CRAN, então basta rodar o código abaixo para instalá-lo:
+
+```{r, eval = FALSE}
+install.packages("tippy")
+```
+
+
+Para colocar uma *tooltip* em um elemento do seu app, basta usar a função `with_tippy()`.
+
+```{r, eval = FALSE}
+tippy::with_tippy(
+  numericInput(
+    "tamanho",
+    label = "Selecione o tamanho da amostra",
+    value = 1000,
+    step = 1000
+  ),
+  tooltip = "Amostra de uma distribuição Normal com média 0 e variância 100."
+)
+```
+
+```{r, echo = FALSE, out.width="70%"}
+knitr::include_graphics("img/tippy.png")
+```
+
+
+Você também pode aplicar a mesma *tooltip* a vários elementos utilizando a função `tippy_class()`.
+
+```{r, eval = FALSE}
+fluidRow(
+  column(
+    width = 4,
+    div(
+      class = "valuebox-tip",
+      shinydashboard::valueBoxOutput("valor_1", width = 12)
+    )
+  ),
+  column(
+    width = 4,
+    div(
+      class = "valuebox-tip",
+      shinydashboard::valueBoxOutput("valor_2", width = 12)
+    )
+  ),
+  column(
+    width = 4,
+    div(
+      class = "valuebox-tip",
+      shinydashboard::valueBoxOutput("valor_3", width = 12)
+    )
+  ),
+  column(
+    width = 12,
+    plotOutput("grafico")
+  ),
+  tippy::tippy_class(
+    "valuebox-tip",
+    content = "Você precisa importar o css do pacote shinydashboard se quiser usar valueBoxes fora do shinydashboard."
+  )
+)
+```
+
+```{r, echo = FALSE, out.width="90%"}
+knitr::include_graphics("img/tippy_class.png")
+```
+
+Você pode customizar a *tooltip* seguindo os parâmetros da [documentação oficial da biblioteca `tippy.js`](https://atomiks.github.io/tippyjs/v6/all-props/).
+
+```{r, eval = FALSE}
+tippy::tippy_class(
+  "valuebox-tip",
+  content = "Você precisa importar o css do pacote shinydashboard se quiser usar valueBoxes fora do shinydashboard.",
+  arrow = TRUE,
+  placement = "left"
+)
+```
+
+```{r, echo = FALSE, out.width="90%"}
+knitr::include_graphics("img/tippy_left.png")
+```
+
+Os fragmentos de código acima pertencem ao app a seguir. Rode o app para ver as *tooltips* em funcionamento.
+
+```{r, eval = FALSE}
+library(shiny)
+
+ui <- fluidPage(
+  shinyWidgets::useShinydashboard(),
+  titlePanel("Usando tooltips"),
+  sidebarLayout(
+    sidebarPanel(
+      tippy::with_tippy(
+        numericInput(
+          "tamanho",
+          label = "Selecione o tamanho da amostra",
+          value = 1000,
+          step = 1000
+        ),
+        tooltip = "Amostra de uma distribuição Normal com média 0 e variância 100."
+      )
+    ),
+    mainPanel(
+      fluidRow(
+        column(
+          width = 4,
+          div(
+            class = "valuebox-tip",
+            shinydashboard::valueBoxOutput("valor_1", width = 12)
+          )
+        ),
+        column(
+          width = 4,
+          div(
+            class = "valuebox-tip",
+            shinydashboard::valueBoxOutput("valor_2", width = 12)
+          )
+        ),
+        column(
+          width = 4,
+          div(
+            class = "valuebox-tip",
+            shinydashboard::valueBoxOutput("valor_3", width = 12)
+          )
+        ),
+        column(
+          width = 12,
+          plotOutput("grafico")
+        ),
+        tippy::tippy_class(
+          "valuebox-tip",
+          content = "Você precisa importar o css do pacote shinydashboard se quiser usar valueBoxes fora do shinydashboard.",
+          arrow = TRUE,
+          placement = "left"
+        )
+      )
+    )
+  )
+)
+
+server <- function(input, output, session) {
+  
+  amostra <- reactive(rnorm(input$tamanho, sd = 10))
+  
+  output$valor_1 <- shinydashboard::renderValueBox({
+    shinydashboard::valueBox(
+      value = round(mean(amostra()), 1),
+      subtitle = "Média dos valores",
+      icon = icon("info-circle")
+    )
+  })
+  
+  output$valor_2 <- shinydashboard::renderValueBox({
+    shinydashboard::valueBox(
+      value = round(var(amostra()), 1),
+      subtitle = "Variância dos valores",
+      icon = icon("info-circle")
+    )
+  })
+  
+  output$valor_3 <- shinydashboard::renderValueBox({
+    shinydashboard::valueBox(
+      value = round(sd(amostra()), 1),
+      subtitle = "Desvio-padrão dos valores",
+      icon = icon("info-circle")
+    )
+  })
+  
+  output$grafico <- renderPlot(hist(amostra()))
+  
+}
+
+shinyApp(ui, server)
+
+```

@@ -8,17 +8,50 @@ knitr::opts_chunk$set(
 
 Neste capítulo, falaremos de um tema central para quem deseja construir aplicativos em Shiny: a reatividade.
 
-Primeiro, faremos uma breve introdução explicando o que é reatividade e por que ela é importante no Shiny. Em seguida, falaremos sobre valores e expressões reativdas, isto é, como a reatividade se manifesta dentro dos nossos códigos. As demais seções desse capítulo vão nos ensinar como construir diversos fluxos básicos de reatividade corretamente.
+Primeiro, faremos uma breve introdução explicando o que é reatividade e por que ela é importante no Shiny. Em seguida, falaremos sobre valores e expressões reativas, isto é, como a reatividade se manifesta dentro dos nossos códigos. As demais seções desse capítulo vão nos ensinar como construir corretamente diversos fluxos básicos de reatividade.
 
 ## O que é reatividade?
 
-Antes de mais nada, é válido ressaltar que não precisamos entender o que é reatividade e como ela funciona para usá-la e construir um aplicativo Shiny. Nos capítulos anteriores, construímos alguns aplicativos sem falar explicitamente de reatividade.
+Quando escrevemos código R, dois paradigmas estão sempre presentes: 
 
-Uma pessoa iniciante no Shiny pode decorar como utilizar os valores e expressões reativas e desenvolver diversos tipos de app sem nunca entender como a reatividade funciona. Eu não recomendo esse caminho. 
+- podemos avaliar uma linha de código assim que a escrevermos;
 
-Dominar o conceito de reatividade nos permite construir apps mais eficientes e sofisticados. Mais do que isso, nos permite evitar cada vez mais os erros de mau uso dos valores e expressões reativas, que nos consomem um bom tempo do dia-a-dia de desenvolvimento. Dominar o conceito de reatividade nos faz melhor em Shiny, e garanto que vale a pena traçar esse caminho desde o início.
+- e, se decidirmos rodar todo o script de uma vez, as linhas de código são avaliadas sequencialmente.
 
-## Valores reativos, expressões reativas e *observers*
+Isso geralmente faz com que escrevamos scripts sequenciais, cujo código não pode ser executado fora de ordem.
+
+O código abaixo, que executa a corriqueira tarefa de importar, manipular e visualizar uma base, mostra um exemplo disso. Construímos o código rodando linha a linha, para testar se estamos seguindo pelo caminho certo. Ao final, podemos rodar tudo de uma vez para obter o resultado desejado (o gráfico). Se o código for rodado fora de ordem, nada vai funcionar.
+
+```{r, eval = FALSE}
+tab_starwars <- dplyr::starwars
+
+tab_grafico <- tab_starwars |>
+  tidyr::unnest(films) |> 
+  tidyr::drop_na(species) |> 
+  dplyr::group_by(films) |>
+  dplyr::summarise(total_especies = dplyr::n_distinct(species)) |> 
+  dplyr::mutate(
+    films = forcats::fct_reorder(films, total_especies)
+  )
+
+tab_grafico |> 
+  ggplot2::ggplot(ggplot2::aes(y = films, x = total_especies)) +
+  ggplot2::geom_col() +
+  ggplot2::theme_minimal() +
+  ggplot2::labs(x = "Total de espécies", y = "Filme")
+```
+
+A reatividade é um outro paradigma de programação. Com ela, não construímos códigos que serão rodados interativamente ou sequencialmente. A ideia da programação reativa é especificar um fluxo de reatividade, isto é, um diagrama de dependências que será utilizado para definir o que deve ser executado e quando. No contexto do Shiny, o fluxo de reatividade é quem decide quais outputs devem ser recalculados quando um input muda.
+
+É válido ressaltar que não precisamos entender o que é reatividade e como ela funciona para usá-la e construir um aplicativo Shiny. Nos capítulos anteriores, construímos alguns aplicativos sem falar explicitamente de reatividade.
+
+Uma pessoa iniciante no Shiny pode decorar como utilizar os valores e expressões reativas e desenvolver diversos tipos de app sem nunca entender como a reatividade funciona. Eu **não** recomendo esse caminho. 
+
+Dominar o conceito de reatividade nos permite construir apps mais eficientes e sofisticados. Mais do que isso, nos permite evitar cada vez mais os erros com valores e expressões reativas, que nos consomem um bom tempo de desenvolvimento. Dominar o conceito de reatividade nos faz melhor em Shiny, e garanto que vale a pena traçar esse caminho desde o início.
+
+Os principais conceitos por trás da construção de fluxos reativos são os valores e as expressões reativas. Dedicamos a próxima seção a eles.
+
+## Valores reativos e expressões reativas
 
 Reactive values are an implementation of Reactive sources; that is, they are an implementation of that role.
 Reactive expressions are an implementation of Reactive conductors. They can access reactive values or other reactive expressions, and they return a value.
@@ -28,6 +61,8 @@ Reactive expressions and observers are similar in that they store expressions th
 
 Observers (and endpoints in general) respond to reactive flush events, but reactive expressions (and conductors in general) do not. We’ll learn more about flush events in the next section. If you want a reactive expression to execute, it must have an observer as a descendant on the reactive dependency graph.
 Reactive expressions return values, but observers don’t.
+
+## *Observers*
 
 ## Diagrama de reatividade: `reaclog`
 

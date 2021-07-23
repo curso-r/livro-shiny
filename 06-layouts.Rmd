@@ -4,7 +4,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Layouts
+# UI e Layouts
 
 ## Um pouco sobre HTML
 
@@ -15,3 +15,92 @@ knitr::opts_chunk$set(
 ### `sidebarLayout()`
 
 ### `navbarPage()`
+
+## Um pouco sobre CSS
+
+## Usando Markdown para textos
+
+É comum precisarmos colocar em nossos aplicativos páginas com orientações, informações adicionais ou referências. 
+
+Essas páginas geralmente são compostas por textos, links e imagens, facilmente produzidos em um arquivo Markdown. Em contrapartida, construir esses elementos dentro da UI dá bem mais trabalho, pois tudo precisa ser encapsulado por uma função da lista `shiny::tags$`.
+
+Por exemplo, vamos supor que eu queria colocar a minha *mini bio* (a seguir) em um app que estou fazendo.
+
+<br>
+
+<center>
+<img src="img/foto_william.jpg" width="130px" style="border-radius: 65px;"/>
+
+**William Amorim**
+
+Doutor em Estatística pelo IME-USP. Trabalhando diaramente com análise de dados, programação em R e criação de dashboards. Falo sobre Shiny no [Twitter](https://twitter.com/wamorim_).
+</center>
+
+<br>
+<br>
+
+O arquivo Markdown para construir essa mini bio seria bem simples:
+
+```
+<center>
+<img src="img/foto_william.jpg" width="130px" style="border-radius: 65px;"/>
+
+**William Amorim**
+
+Doutor em Estatística pelo IME-USP. Trabalhando diaramente com análise de dados, programação em R e criação de dashboards. Falo sobre Shiny no [Twitter](https://twitter.com/wamorim_).
+</center>
+```
+
+A mesma mini bio na UI, já é bem mais chato de construir e manter.
+
+```{r, eval = FALSE}
+ui <- fluidPage(
+  fluidRow(
+    column(
+      width = 12,
+      htmltools::img(
+        src = "img/foto_william.jpg",
+        width = "130px",
+        style = "border-radius: 65px; display: block; margin: auto;"
+      ),
+      htmltools::p(
+        htmltools::strong("William Amorim")
+        style = "text-align: center;"
+      ),
+      htmltools::p(
+        style = "text-align: center;",
+        "Doutor em Estatística pelo IME-USP. Trabalhando diaramente 
+        com análise de dados, programação em R e criação de dashboards.
+        Falo sobre Shiny no",
+        htmltools::a(
+          href = "https://twitter.com/wamorim_",
+          "Twitter."
+        )
+      )
+    )
+  )
+)
+```
+
+Mesmo um exemplo simples já começa a deixar claro o problema: produzir muitos elementos HTML na UI rapidamente transforma seu código em um emaranhado de funções aninhadas e cheias de texto. O mesmo vale para textos muito grandes. Embora nesse caso nem sempre tenhámos muitas tags HTML para criar, scripts R não foram feitos para atender os cuiddos que textos carecem.
+
+A melhor prática nessas situações é justamente transferir esses elementos para um arquivo Markdown e pedir que o Shiny transforme em PDF e inclua no lugar adequado apenas na hora do `runApp()`. Para isso usamos a função `shiny::includeMarkdown()`.
+
+Supondo que salvamos o markdown da mini bio em um arquivo `minibio_william.md`, a nossa UI então ficaria:
+
+```{r, eval=FALSE}
+ui <- fluidPage(
+  fluidRow(
+    column(
+      width = 12,
+      includeMarkdown("minibio_william.md")
+    )
+  )
+)
+```
+
+Vale ressaltar que essa função compila arquivos Markdown (`.md`) e não R Markdown (`.Rmd`). Se quisermos rodar códigos R para gerar saídas HTML, devemos fazer isso dentro do próprio Shiny.
+
+
+
+
