@@ -54,25 +54,25 @@ Doutor em Estatística pelo IME-USP. Trabalhando diaramente com análise de dado
 A mesma mini bio na UI, já é bem mais chato de construir e manter.
 
 ```{r, eval = FALSE}
-ui <- fluidPage(
+fluidPage(
   fluidRow(
     column(
       width = 12,
-      htmltools::img(
+      shiny::tags$img(
         src = "img/foto_william.jpg",
         width = "130px",
         style = "border-radius: 65px; display: block; margin: auto;"
       ),
-      htmltools::p(
-        htmltools::strong("William Amorim")
+      shiny::tags$p(
+        shiny::tags$strong("William Amorim"),
         style = "text-align: center;"
       ),
-      htmltools::p(
+      shiny::tags$p(
         style = "text-align: center;",
         "Doutor em Estatística pelo IME-USP. Trabalhando diaramente 
         com análise de dados, programação em R e criação de dashboards.
         Falo sobre Shiny no",
-        htmltools::a(
+        shiny::tags$a(
           href = "https://twitter.com/wamorim_",
           "Twitter."
         )
