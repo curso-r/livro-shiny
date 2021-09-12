@@ -16,9 +16,9 @@ Quando escrevemos código R, dois paradigmas estão sempre presentes:
 
 - podemos avaliar uma linha de código assim que a escrevermos; e
 
-- se decidirmos rodar todo o script de uma vez, as linhas de código são avaliadas sequencialmente.
+- se decidirmos rodar todo o script de uma vez, as linhas de código serão avaliadas sequencialmente.
 
-Isso geralmente faz com que as nossas tarefas de análise de dados virem scripts sequenciais, cujo código não pode ser executado fora de ordem.
+Isso faz com que as nossas tarefas de análise de dados geralmente virem scripts sequenciais, cujo código não pode ser executado fora de ordem.
 
 O código abaixo, que executa a corriqueira tarefa de importar, manipular e visualizar uma base, mostra um exemplo disso. Construímos o código rodando linha a linha, para testar se estamos seguindo pelo caminho certo. Ao final, podemos rodar tudo de uma vez para obter o resultado desejado (o gráfico). Se o código for rodado fora de ordem, nada vai funcionar.
 
@@ -61,7 +61,7 @@ Imagine um app que gere uma amostra de números aleatórios entre 1 e 10 e que o
 knitr::include_graphics("img/app_reactive.png")
 ```
 
-Repare no código do app, apreentado a seguir, que a criação da amostra não poderia ter sido feita diretamente dentro das funções `renderPlot()` e `renderText()`, pois gerariam amostras diferentes^[Claro que poderíamos usar a função `set.seed()` para garantir que as amostras fossem as mesmas, mas imagine que não queremos escolher uma semente para a geração dos dados ou que, em algum outro contexto, o processo de amostragem fosse demorado e não queremos fazê-lo duas vezes.]. Por outro lado, a geração da amostra precisa estar dentro de um contexto reativo, pois ela utiliza um valor reativo (`input$num`), o que tira da mesa a proposta de fazer isso diretamente dentro da função `server`.
+Repare no código do app, apresentado a seguir, que a criação da amostra não poderia ter sido feita diretamente dentro das funções `renderPlot()` e `renderText()`, pois gerariam amostras diferentes^[Claro que poderíamos usar a função `set.seed()` para garantir que as amostras fossem as mesmas, mas imagine que não queremos escolher uma semente para a geração dos dados ou que, em algum outro contexto, o processo de amostragem fosse demorado e não queremos fazê-lo duas vezes.]. Por outro lado, a geração da amostra precisa estar dentro de um contexto reativo, pois ela utiliza um valor reativo (`input$num`), o que tira da mesa a proposta de fazer isso diretamente dentro da função `server`.
 
 ```{r, eval=FALSE}
 library(shiny)
@@ -105,7 +105,9 @@ A solução nesse caso foi utilizar a função `reactive()`. Essa função cria 
 
 Nesse exemplo, o `input$num` é um valor reativo, a `amostra()` é uma expressão reativa e as funções `renderPlot()` e `renderText()` são *observers*. O fluxo reativo se inicia com um mudança no valor do `input$num` e termina com a recriação do gráfico e do texto. O valor reativo, quando alterado, avisa à expressão reativa `amostra` que seu valor está desatualizado e, por sua vez, a `amostra` avisa aos *observers* `renderPlot()` e `renderText()` que seu valor está desatualizado. Assim, tanto a expressão reativa quanto os *observers* são recalculados e seus resultados enviado de volta para a UI.
 
-Por fim, vamos fazer um paralelo com uma fábrica de brinquedos. A fábrica utiliza algumas matérias-primas, como madeira, plástico e tecido, para fabricar os brinquetos. Nela, existem algumas máquinas que recebem a matéria-prima e transformam em partes dos brinquedos e máquinas que recebem todas as partes e montam o brinquedo, colocando-o dentro de sua embalagem ao final. Nessa metáfora, a matéria-prima representa os valores reativos, as máquinas de produzem as partes são as expressões reativas e a máquina que monta e empacota o brinquedo são os *observers*.
+Se esses conceitos apresentados até agora estão muito abstratos, pense em uma fábrica de brinquedos. A fábrica utiliza algumas matérias-primas, como madeira, plástico e tecido, para fabricar os brinquetos. Nela, existem algumas máquinas que recebem a matéria-prima e a transformam em partes dos brinquedos, assim como máquinas que recebem tanto matérias-prima quanto essas partes pré-fabricadas e montam o brinquedo.
+
+Nessa metáfora, a matéria-prima representa os valores reativos (cada material pode ser visto como um input), as máquinas que produzem as partes são as expressões reativas e a máquina que monta o brinquedo são os *observers*.
 
 Nas próxima seções, falaremos com mais detalhes de cada uma dessas estruturas e das funções que utilizamos para criá-las.
 
