@@ -22,10 +22,12 @@ tibble::tribble(~Função, ~`Saída`,
                 "plotOutput()", "Gráficos",
                 "tableOutput()", "Tabelas",
                 "textOutput()", "Textos") %>%
-  knitr::kable(format = "html")
+  reactable::reactable(
+    sortable = FALSE
+  )
 ```
 
-Essas funções especificam **onde** os outputs serão colocados  dentro da UI. Elas não especificam **como** eles serão criados. Para isso, utilizamos as funções do tipo `render*()`, responsáveis por definir o código R que gera cada output. Além disso, elas *renderizam* os resultados desses para HTML, possibilitando que essas visualizações sejam inseridas no código que gera a UI. Na grande maioria dos casos, teremos o par `visualizacaoOutput()` `renderVisualizacao()`. 
+Essas funções especificam **onde** os outputs serão colocados  dentro da UI. Elas não especificam **como** eles serão criados. Para isso, utilizamos as funções do tipo `render*()`, responsáveis por definir o código R que gera cada output. Além disso, elas *renderizam* os resultados para HTML, possibilitando que essas visualizações sejam inseridas no código que gera a UI. Na grande maioria dos casos, teremos o par `visualizacaoOutput()` `renderVisualizacao()`. 
 
 Veja a seguir as principais funções `render*()` e como elas se comunicam com as funções `*Output()`.
 

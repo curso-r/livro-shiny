@@ -1,3 +1,4 @@
+
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(
   fig.align = "center"
@@ -57,7 +58,7 @@ Muitas vezes, um aplicativo shiny precisa de passos intermediários, entre o inp
 
 Imagine um app que gere uma amostra de números aleatórios entre 1 e 10 e que o tamanho dessa amostra é definido por um input. Além disso, esse app também indique em texto qual foi o número mais sorteado. A figura a seguir mostra uma implementação desse app.
 
-```{r, out.width="100%", echo = FALSE}
+```{r, out.width=10, echo = FALSE}
 knitr::include_graphics("img/app_reactive.png")
 ```
 
