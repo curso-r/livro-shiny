@@ -7,13 +7,65 @@ knitr::opts_chunk$set(
 
 # Reatividade: conceitos básicos
 
-Neste capítulo, falaremos de um tema central para quem deseja construir aplicativos em Shiny: a reatividade.
+Imagine que gostaríamos de criar um app que geresse um gráfico com o resultado do sorteio de uma amostra de números entre 1 e 10 e que o tamanho dessa amostra fosse definido por um input. Além disso, que esse app também indicasse em texto qual foi o número mais sorteado. 
 
-Primeiro, faremos uma breve introdução explicando o que é reatividade e por que ela é importante no Shiny. Em seguida, falaremos sobre valores e expressões reativas, isto é, como a reatividade se manifesta dentro dos nossos códigos. As demais seções desse capítulo vão nos ensinar como construir corretamente diversos fluxos básicos de reatividade.
+Pensando na construção desse app, teríamos um input, o tamanho da amostra, e dois outputs, um gráfico (de barras) indicando a frequência de cada número e um texto dizendo qual o número mais sorteado. Pelo que aprendemos no capítulo anterior, podemos usar um `sliderInput()` para receber o tamanho da amostra e as funções `renderPlot()` e `renderText()` para construir os textos. No entanto, uma dúvida emerge com relação ao sorteio da amostra: onde ele deve ser feito?
+
+Obviamente, sortear a amostra durante a construção de cada output como exemplifica o código abaixo não vai funcionar pois geraríamos duas amostras diferentes^[Claro que poderíamos usar a função `set.seed()` para garantir que as amostras fossem as mesmas, mas imagine que não queremos escolher uma semente para a geração dos dados ou que, em algum outro contexto, o processo de amostragem fosse demorado e não queremos fazê-lo duas vezes.]. 
+
+```{r}
+# Solução insuficiente, pois as amostras geradas serão diferentes
+server <- function(input, output, session) {
+  
+  output$grafico <- renderPlot({
+    amostra <- sample(1:10, input$tamanho, replace = TRUE)
+    amostra |> 
+      table() |> 
+      barplot()
+  })
+    
+  output$resultado <- renderText({
+    amostra <- sample(1:10, input$tamanho, replace = TRUE)
+    contagem <- table(amostra)
+    mais_freq <- names(contagem[which.max(contagem)])
+    glue::glue("O valor mais sorteado foi o {mais_freq}.")
+  })
+}
+```
+
+A solução ingênua seria criar a amostra uma única vez, fora das funções `render*()`, mas isso retornará um erro. O que a mensagem de erro diz, de maneira mais direta, é que essa solução fere as regras de reatividade do Shiny.
+
+```{r}
+# Solução incorreta, pois viola as regras de reatividade do Shiny.
+server <- function(input, output, session) {
+  
+  amostra <- sample(1:10, input$tamanho, replace = TRUE)
+  
+  output$grafico <- renderPlot({
+    amostra |> 
+      table() |> 
+      barplot()
+  })
+    
+  output$resultado <- renderText({
+    contagem <- table(amostra)
+    mais_freq <- names(contagem[which.max(contagem)])
+    glue::glue("O valor mais sorteado foi o {mais_freq}.")
+  })
+}
+
+#> Error in : Can't access reactive value 'tamanho' outside of reactive consumer.
+```
+
+A construção desse app traz à tona a necessidade de uma nova peça do Shiny, que não mencionamos ainda. Sem ela não consiguiríamos criar esse app de maneira eficiente. 
+
+No entanto, como podemos ver pela mensagem de erro da tentiva anterior, para ficar clara a importância dessa nova peça precisamos falar de um dos temas centrais do desenvolvimento de aplicativos Shiny: a reatividade.
+
+Na próxima seção, faremos uma breve introdução explicando o que é reatividade e por que ela é importante no Shiny. Em seguida, falaremos sobre as peças fundamentais da reatividade (duas delas já conhecemos, apresentaremos a faltante). Por fim, vamos conhecer o `reactlog`, uma ferramente muito útil para visualizar a reatividade de um aplicativo.
 
 ## O que é reatividade?
 
-Quando escrevemos código R, dois paradigmas estão sempre presentes: 
+Quando escrevemos código R, dois paradigmas estão sempre presentes:
 
 - podemos avaliar uma linha de código assim que a escrevermos; e
 
@@ -44,17 +96,43 @@ tab_grafico |>
 
 A reatividade é um outro paradigma de programação. Com ela, não construímos códigos que serão rodados interativamente ou sequencialmente. A ideia da programação reativa é **especificar um fluxo de reatividade**, isto é, um diagrama de dependências que será utilizado para definir o que deve ser executado e quando. No contexto do Shiny, o fluxo de reatividade é quem decide quais outputs devem ser recalculados quando um input muda.
 
-É válido ressaltar que não precisamos entender o que é reatividade e como ela funciona para usá-la e construir um aplicativo Shiny. Nos capítulos anteriores, construímos alguns aplicativos sem falar explicitamente de reatividade. Uma pessoa iniciante no Shiny pode decorar como utilizar os valores e expressões reativas e desenvolver diversos tipos de app sem nunca entender como a reatividade funciona. Porém, eu **não** recomendo esse caminho. 
+Dominar o conceito de reatividade nos permite construir apps mais eficientes e sofisticados. Mais do que isso, nos permite evitar cada vez mais os erros visíveis  --- como o apresentado na introdução do capítulo --- e invisíveis --- quando o app funciona, mas de maneira ineficiente ---, que nos consomem um bom tempo na hora do desenvolvimento. Dominar o conceito de reatividade nos faz melhor em Shiny, e garanto que vale a pena traçar esse caminho desde o início.
 
-Dominar o conceito de reatividade nos permite construir apps mais eficientes e sofisticados. Mais do que isso, nos permite evitar cada vez mais os erros com valores e expressões reativas, que nos consomem um bom tempo na hora do desenvolvimento. Dominar o conceito de reatividade nos faz melhor em Shiny, e garanto que vale a pena traçar esse caminho desde o início. Então vamos lá!
+O primeiro passo é entender o que é o fluxo de reatividade. 
 
-O fluxo de reatividade de um shiny app possui 3 estruturas principais: os valores reativos, as expressões reativas e os *observers*.
+## O fluxo de reatividade
 
-Os valores reativos são **a origem do fluxo reativo**. Eles guardam as informações que vêm da UI (a partir dos inputs) e disparam o *sinal de alerta* sempre que essas informações mudam. Os valores reativos mais comuns são aqueles dentro da lista `input`.
+Faremos isso conhecendo as suas 3 peças fundamentais: os valores reativos, os *observers* e as expressões reativas. Elas serão os temas das próximas secões.
 
-Esse *sinal de alerta* é um aviso dizendo que todos os outputs que dependem desse valor reativo precisam ser recalculados. Quem recebe esse sinal são os *observers*, isto é, as estruturas dentro do Shiny que guardam o código de cada output. Eles são o **ponto final do fluxo de reatividade**. Os *observers* mais comuns são as funções `render*()`.
+### Valores reativos
 
-Muitas vezes, um aplicativo shiny precisa de passos intermediários, entre o input de origem e o output final. Isto é, precisamos de uma estrutura que receba um valor reativo, faça alguma conta e devolva um resultado, um valor também reativo que será utilizado posteriormente em um *observer*. Essas estruturas são as expressões reativas.
+Os valores reativos são **a origem do fluxo reativo**. Eles guardam as informações que vêm da UI e disparam um *sinal de alerta* sempre que essas informações mudam. Esse sinal é enviado a qualquer output do app que dependa desses valores e indica que essas saídas devem ser recalculadas.
+
+Embora não tenhamos os apresentas dessa forma, nós já usamos valores reativos em exemplos anteriores. Nos referimos aos inputs, ou melhor, aos valores dentro da lista `input`, na função `server`. Eles são os valores reativos mais comuns, pois estarão presentes em qualquer app. 
+
+### *Observers*
+
+O *sinal de alerta* enviado por um valor reativo sempre que ele sofre uma mudança é o início do fluxo reativo. O fluxo tem sequência com os *observers*, que recebem e interpretam esse sinal. Como resultado, os *observers* buscam o valor atualizado do valor reativo e recalculam as suas saídas, dando fim ao fluxo.
+
+Os *observers* mais comuns, também já utilizados anteriormente, são as funções `render*()`. Elas guardam os códigos que geram os outputs do app, que na maioria dos casos dependem dos valores reativos. Assim, além de renderizar seus conteúdos para HTML, essas funções têm o papel de escutar os sinais de alerta gerados pelos valores reativos, para que os outputs sejam recalculados quando os inputs mudam.
+
+### Expressões reativas
+
+Muitas vezes, um aplicativo shiny precisa de passos intermediários, entre o input de origem e o output final. Isto é, precisamos de uma estrutura que receba um valor reativo, faça alguma conta e devolva um resultado, um valor também reativo que será utilizado posteriormente em um *observer*. Essas estruturas são as **expressões reativas**. Elas são nossa peça faltante.
+
+### O fluxo em detalhes
+
+## As funções `reactive` e `eventReactive`
+
+Keep in mind that if your application tries to access reactive values or expressions from outside a reactive context — that is, outside of a reactive expression or observer — then it will result in an error. You can think of there being a reactive “world” which can see and change the non-reactive world, but the non-reactive world can’t do the same to the reactive world. Code like this will not work, because the call to fib() is not in the reactive world (it’s not in a reactive() or renderXX() call) but it tries to access something that is, the reactive value input$n:
+
+```{r, eval = FALSE}
+server <- function(input, output) {
+  # Will give error
+  currentFib      <- fib(as.numeric(input$n))
+  output$nthValue <- renderText({ currentFib })
+}
+```
 
 Imagine um app que gere uma amostra de números aleatórios entre 1 e 10 e que o tamanho dessa amostra é definido por um input. Além disso, esse app também indique em texto qual foi o número mais sorteado. A figura a seguir mostra uma implementação desse app.
 
@@ -62,7 +140,7 @@ Imagine um app que gere uma amostra de números aleatórios entre 1 e 10 e que o
 knitr::include_graphics("img/app_reactive.png")
 ```
 
-Repare no código do app, apresentado a seguir, que a criação da amostra não poderia ter sido feita diretamente dentro das funções `renderPlot()` e `renderText()`, pois gerariam amostras diferentes^[Claro que poderíamos usar a função `set.seed()` para garantir que as amostras fossem as mesmas, mas imagine que não queremos escolher uma semente para a geração dos dados ou que, em algum outro contexto, o processo de amostragem fosse demorado e não queremos fazê-lo duas vezes.]. Por outro lado, a geração da amostra precisa estar dentro de um contexto reativo, pois ela utiliza um valor reativo (`input$num`), o que tira da mesa a proposta de fazer isso diretamente dentro da função `server`.
+Repare no código do app, apresentado a seguir, que a criação da amostra não poderia ter sido feita diretamente dentro das funções `renderPlot()` e `renderText()`, pois gerariam amostras diferentes. Por outro lado, a geração da amostra precisa estar dentro de um contexto reativo, pois ela utiliza um valor reativo (`input$num`), o que tira da mesa a proposta de fazer isso diretamente dentro da função `server`.
 
 ```{r, eval=FALSE}
 library(shiny)
@@ -111,15 +189,6 @@ Se esses conceitos apresentados até agora estão muito abstratos, pense em uma 
 Nessa metáfora, a matéria-prima representa os valores reativos (cada material pode ser visto como um input), as máquinas que produzem as partes são as expressões reativas e a máquina que monta o brinquedo são os *observers*.
 
 Nas próxima seções, falaremos com mais detalhes de cada uma dessas estruturas e das funções que utilizamos para criá-las.
-
-## Valores reativos
-
-## Expressões reativas
-
-## *Observers*
-
-Observers (and endpoints in general) respond to reactive flush events, but reactive expressions (and conductors in general) do not. We’ll learn more about flush events in the next section. If you want a reactive expression to execute, it must have an observer as a descendant on the reactive dependency graph.
-Reactive expressions return values, but observers don’t.
 
 ## Diagrama de reatividade: `reaclog`
 
@@ -208,21 +277,3 @@ Como descrito na [documentação da ferramenta](https://shiny.rstudio.com/refere
 
 Você pode aprender mais sobre o funcionamento do `reaclog` [clicando aqui](https://rstudio.github.io/reactlog/articles/reactlog.html). 
 
-## Funções `render`
-
-## `reactive` e `eventReactive`
-
-Keep in mind that if your application tries to access reactive values or expressions from outside a reactive context — that is, outside of a reactive expression or observer — then it will result in an error. You can think of there being a reactive “world” which can see and change the non-reactive world, but the non-reactive world can’t do the same to the reactive world. Code like this will not work, because the call to fib() is not in the reactive world (it’s not in a reactive() or renderXX() call) but it tries to access something that is, the reactive value input$n:
-
-```{r, eval = FALSE}
-server <- function(input, output) {
-  # Will give error
-  currentFib      <- fib(as.numeric(input$n))
-  output$nthValue <- renderText({ currentFib })
-}
-```
-
-
-## `observe` e `observEvent`
-
-## Importando bases de dados
