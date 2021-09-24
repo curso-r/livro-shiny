@@ -51,7 +51,7 @@ A princípio, você não precisará se preocupar com CSS, pois a aparência padr
 Podemos pensar na programação desse código HTML como a construção daquilo que será mostrado na tela, a cara do seu app, a interface de usuário ou **UI** (sigla para o termo *user interface*, em inglês). Das definições apresentadas na seção anterior, a UI corresponde à página web. A figura a seguir mostra a UI de um app bem simples, que permite a escolha de duas variáveis e apresenta o gráfico de dispersão delas:
 
 ```{r, echo = FALSE, fig.cap="UI de um app simples.", fig.alt = "UI de um app simples."}
-knitr::include_graphics("img/app._penguins_disp.png")
+knitr::include_graphics("img/app_penguins_disp.png")
 ```
 
 O segundo componente se refere àquilo que não será visto por quem utilizar o app: o **servidor**. O lado do servidor (*server side* ou simplesmente *server*, em inglês) contém toda a lógica para a construção das visualizações apresentadas na UI. Na figura anterior, o código que gera o gráfico de dispersão fica dentro do servidor.

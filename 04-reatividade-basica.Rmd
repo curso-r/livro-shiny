@@ -102,9 +102,58 @@ O primeiro passo é entender o que é o fluxo de reatividade.
 
 ## O fluxo de reatividade
 
-Um aplicativo Shiny é composto por um ou mais outputs que podem ser controlados a partir de um ou mais inputs. Sempre que alteramos o valor de um input na tela, uma mensagem é enviada para o servidor onde o aplicativo está hospedado e, dentro da sessão de R, é recebida pela função `server()`. Essa mensagem contém o novo valor desse input, que transmitido **apenas para os outputs que dependem dele**. Esses outputs são recalculados e os novos resultados são devolvidos para a UI. Chamamos esse processo de **fluxo de reatividade**.
+Um aplicativo Shiny é composto por um ou mais outputs que podem ser controlados a partir de um ou mais inputs. Sempre que alteramos o valor de um input na tela, uma mensagem é enviada para o servidor onde o aplicativo está hospedado e, dentro da sessão de R, é recebida pela função `server()`. Essa mensagem contém o novo valor desse input, que é transmitido **apenas para os outputs que dependem dele**. Esses outputs são recalculados e os novos resultados são devolvidos para a UI. Chamamos esse processo de **fluxo de reatividade**.
 
-O fluxo de reatividade de um app é definido por seus inputs, outputs e pelo código contido dentro da função `server()`.
+O fluxo de reatividade de um app é definido por seus inputs, outputs e pelo código contido dentro da função `server()`. Vamos analisar um exemplo simples. O app seguir possui dois inputs (caixas de seleção) e dois outputs (gráficos).
+
+```{r, echo = FALSE, fig.cap="Imagem de um Shiny app com dois inputs e dois outputs."}
+knitr::include_graphics("img/app_dois_outputs.png")
+```
+
+O código desse app se enconta a seguir:
+
+```{r, eval=FALSE}
+library(shiny)
+
+variaveis <- names(mtcars)
+
+ui <- fluidPage(
+  selectInput(
+    inputId = "variavel_A",
+    label = "Variável A",
+    choices = variaveis
+  ),
+  plotOutput(outputId = "histograma_A"),
+  selectInput(
+    inputId = "variavel_B",
+    label = "Variável B",
+    choices = variaveis,
+    selected = variaveis[2],
+  ),
+  plotOutput(outputId = "histograma_B")
+)
+
+server <- function(input, output, session) {
+
+  output$histograma_A <- renderPlot({
+    print("Gerando histograma A...")
+    hist(mtcars[[input$variavel_A]], main = "Histograma A")
+  })
+
+  output$histograma_B <- renderPlot({
+    print("Gerando histograma B...")
+    hist(mtcars[[input$variavel_B]], main = "Histograma B")
+  })
+
+}
+
+shinyApp(ui, server)
+
+```
+
+Quando alteramos o valor da Variável A, o seguinte processo acontece:
+
+- 
 
 Faremos isso conhecendo as suas 3 peças fundamentais: os valores reativos, os *observers* e as expressões reativas. Elas serão os temas das próximas secões.
 
