@@ -94,13 +94,17 @@ tab_grafico |>
   ggplot2::labs(x = "Total de espécies", y = "Filme")
 ```
 
-A reatividade é um outro paradigma de programação. Com ela, não construímos códigos que serão rodados interativamente ou sequencialmente. A ideia da programação reativa é **especificar um fluxo de reatividade**, isto é, um diagrama de dependências que será utilizado para definir o que deve ser executado e quando. No contexto do Shiny, o fluxo de reatividade é quem decide quais outputs devem ser recalculados quando um input muda.
+A reatividade é um outro paradigma de programação. Com ela, não construímos códigos que serão rodados interativamente ou sequencialmente. A ideia da programação reativa é **especificar um diagrama de dependências** que será utilizado para definir o que deve ser executado e quando. No contexto do Shiny, o fluxo de reatividade é quem decide quais outputs devem ser recalculados quando um input muda.
 
 Dominar o conceito de reatividade nos permite construir apps mais eficientes e sofisticados. Mais do que isso, nos permite evitar cada vez mais os erros visíveis  --- como o apresentado na introdução do capítulo --- e invisíveis --- quando o app funciona, mas de maneira ineficiente ---, que nos consomem um bom tempo na hora do desenvolvimento. Dominar o conceito de reatividade nos faz melhor em Shiny, e garanto que vale a pena traçar esse caminho desde o início.
 
 O primeiro passo é entender o que é o fluxo de reatividade. 
 
 ## O fluxo de reatividade
+
+Um aplicativo Shiny é composto por um ou mais outputs que podem ser controlados a partir de um ou mais inputs. Sempre que alteramos o valor de um input na tela, uma mensagem é enviada para o servidor onde o aplicativo está hospedado e, dentro da sessão de R, é recebida pela função `server()`. Essa mensagem contém o novo valor desse input, que transmitido **apenas para os outputs que dependem dele**. Esses outputs são recalculados e os novos resultados são devolvidos para a UI. Chamamos esse processo de **fluxo de reatividade**.
+
+O fluxo de reatividade de um app é definido por seus inputs, outputs e pelo código contido dentro da função `server()`.
 
 Faremos isso conhecendo as suas 3 peças fundamentais: os valores reativos, os *observers* e as expressões reativas. Elas serão os temas das próximas secões.
 
