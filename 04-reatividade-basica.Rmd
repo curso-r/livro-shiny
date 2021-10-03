@@ -61,6 +61,8 @@ A construção desse app traz à tona a necessidade de uma nova peça do Shiny, 
 
 No entanto, como podemos ver pela mensagem de erro da tentiva anterior, para ficar clara a importância dessa nova peça precisamos falar de um dos temas centrais do desenvolvimento de aplicativos Shiny: a reatividade.
 
+Embora dê para fazer muita coisa no Shiny na tentativa e erro, entender a reatividade nos desvia de vários erros explícitos  --- como o erro acima --- e, principalmente, dos erros invisíveis --- quando o app funciona, mas de maneira ineficiente ou errada. Economizamos muito tempo (e sanidade) por não incorrer nesses erros durante o desenvolvimento de um app e, por isso, garanto que vale a pena estudar reatividade desde o início da sua jornada pelo Shiny.
+
 Na próxima seção, faremos uma breve introdução explicando o que é reatividade e por que ela é importante no Shiny. Em seguida, falaremos sobre as peças fundamentais da reatividade (duas delas já conhecemos, apresentaremos a faltante). Por fim, vamos conhecer o `reactlog`, uma ferramente muito útil para visualizar a reatividade de um aplicativo.
 
 ## O que é reatividade?
@@ -73,7 +75,7 @@ Quando escrevemos código R, dois paradigmas estão sempre presentes:
 
 Isso faz com que as nossas tarefas de análise de dados geralmente virem scripts sequenciais, cujo código não pode ser executado fora de ordem.
 
-O código abaixo, que executa a corriqueira tarefa de importar, manipular e visualizar uma base, mostra um exemplo disso. Construímos o código rodando linha a linha, para testar se estamos seguindo pelo caminho certo. Ao final, podemos rodar tudo de uma vez para obter o resultado desejado (o gráfico). Se o código for rodado fora de ordem, nada vai funcionar.
+O código abaixo, que executa a corriqueira tarefa de importar, manipular e visualizar uma base, mostra um exemplo disso. Construímos o código rodando linha a linha, para testar se estamos seguindo pelo caminho certo. Ao final, podemos rodar tudo de uma vez para obter o resultado desejado (o gráfico). Se o código for rodado fora de ordem, nada vai funcionar. Essa maneira de escrever e avaliar códigos é conhecida como **programação imperativa**.
 
 ```{r, eval = FALSE}
 tab_starwars <- dplyr::starwars
@@ -94,13 +96,87 @@ tab_grafico |>
   ggplot2::labs(x = "Total de espécies", y = "Filme")
 ```
 
-A reatividade é um outro paradigma de programação. Com ela, não construímos códigos que serão rodados interativamente ou sequencialmente. A ideia da programação reativa é **especificar um diagrama de dependências** que será utilizado para definir o que deve ser executado e quando. No contexto do Shiny, o fluxo de reatividade é quem decide quais outputs devem ser recalculados quando um input muda.
+A reatividade reside em um outro paradigma de programação, conhecido como **programação declarativa**. Nele, não construímos códigos que serão rodados interativamente ou sequencialmente, mas sim uma *receita* que especifica o que o computador deve fazer em um determinado conjunto de situações. Essas receitas geralmente são usadas dentro de um contexto específico, um ambiente que sabe qual código deve ser executado e quando.
 
-Dominar o conceito de reatividade nos permite construir apps mais eficientes e sofisticados. Mais do que isso, nos permite evitar cada vez mais os erros visíveis  --- como o apresentado na introdução do capítulo --- e invisíveis --- quando o app funciona, mas de maneira ineficiente ---, que nos consomem um bom tempo na hora do desenvolvimento. Dominar o conceito de reatividade nos faz melhor em Shiny, e garanto que vale a pena traçar esse caminho desde o início.
+No contexto do Shiny, essa receita é um conjunto de dependências que será utilizado para decidir quais outputs devem ser recalculados quando um input muda. Não somos nós que rodamos ou decidimos quando rodar o código que gera um output, nós apenas definimos qual código será esse. O ambiente criado pelo Shiny (quando um app está em funcionamento) é quem decide a hora certa de executar esse código (se é que ele será executado).
 
-O primeiro passo é entender o que é o fluxo de reatividade. 
+Todo esse processo que envolve monitorar mudanças nos inputs para atualizar os outputs a partir de uma receita composta de códigos que devem ser executados na hora certa é o que chamamos de **reatividade**. A melhor parte é que o Shiny cuida sozinho de grande parte desse processo. Tudo o que precisamos fazer é especificar a receita.
 
-## O fluxo de reatividade
+Essa receita nada mais é do que a função `server()`, isto é, são os códigos que escrevemos na função `server()` que determinam as dependências entre inputs e outputs. Chamaremos aqui o conjunto de dependências de um app de **diagrama de reatividade**. 
+
+Para ilustrar esses conceitos, considere o app gerado pelo código a seguir.
+
+```{r, eval=FALSE}
+library(shiny)
+
+variaveis <- names(mtcars)
+
+ui <- fluidPage(
+  selectInput(
+    inputId = "variavel_A",
+    label = "Variável A",
+    choices = variaveis
+  ),
+  plotOutput(outputId = "histograma_A"),
+  selectInput(
+    inputId = "variavel_B",
+    label = "Variável B",
+    choices = variaveis,
+    selected = variaveis[2],
+  ),
+  plotOutput(outputId = "histograma_B")
+)
+
+server <- function(input, output, session) {
+
+  output$histograma_A <- renderPlot({
+    print("Gerando histograma A...")
+    hist(mtcars[[input$variavel_A]], main = "Histograma A")
+  })
+
+  output$histograma_B <- renderPlot({
+    print("Gerando histograma B...")
+    hist(mtcars[[input$variavel_B]], main = "Histograma B")
+  })
+
+}
+
+shinyApp(ui, server)
+```
+
+O diagrama de reatividade desse app, determinado pela função `server()`, pode ser representado pelo seguinte esquema:
+
+```{r, echo = FALSE, fig.cap="Diagrama de reatividade de um app com dois inputs e dois outputs."}
+knitr::include_graphics("img/diagrama_reatividade.svg")
+```
+
+O diagrama mostra que a reatividade desse aplicativo possui dois caminhos independentes, um começando com o input `variavel_A` e terminando no output `histograma_A` e o outro começando com o `variavel_B` e terminando no output `histograma_B`. A ausência de conexão entre o `histograma_A` e a `variavel_b` indica que, ao mudarmos a `variavel_b`, o `histograma_A` não será recalculado. O mesmo vale para o `histograma_B` e a `variavel_A`.
+
+A ligação direta de um único input com um único output, como mostrado no exemplo, é o caso mais simples de esquema reativo que um app pode apresentar. Na prática, construíremos apps com diagramas muito mais complexos que, muitas vezes, necessitam de um bocado de lógica de programação. No entanto, não parece ser possível aumentar a complexidade desse diagrama apenas com as peças que temos disponíveis (inputs e outputs). Precisamos de funções que manipulam a reatividade.
+
+No restante deste capítulo, aprenderemos alguns conceitos e funções que nos permitirão ter um controle maior sobre a reatividade dos nosso aplicativos. Não esgotaremos o assunto reatividade aqui, ele será retomado no Capítulo XX, mas já sairemos capazes de construir divertos tipos de apps diferentes. 
+
+Começaremos aprendendo o que são valores reativos, observers e expressões reativas.
+
+### Valores reativos
+
+Os valores reativos são **a origem do diagrama de reatividade**. Eles guardam as informações que vêm da UI (a partir dos inputs) e disparam *sinais de alerta* sempre que essas informações mudam.
+
+Os valores reativos são **a origem do diagrama de reatividade**. Eles guardam as informações que vêm da UI e disparam um *sinal de alerta* sempre que essas informações mudam. Esse sinal é enviado a qualquer output do app que dependa desses valores e indica que essas saídas devem ser recalculadas.
+
+Embora não tenhamos os apresentas dessa forma, nós já usamos valores reativos em exemplos anteriores. Nos referimos aos inputs, ou melhor, aos valores dentro da lista `input`, na função `server`. Eles são os valores reativos mais comuns, pois estarão presentes em qualquer app. 
+
+### *Observers*
+
+O *sinal de alerta* enviado por um valor reativo sempre que ele sofre uma mudança é o início do fluxo reativo. O fluxo tem sequência com os *observers*, que recebem e interpretam esse sinal. Como resultado, os *observers* buscam o valor atualizado do valor reativo e recalculam as suas saídas, dando fim ao fluxo.
+
+Os *observers* mais comuns, também já utilizados anteriormente, são as funções `render*()`. Elas guardam os códigos que geram os outputs do app, que na maioria dos casos dependem dos valores reativos. Assim, além de renderizar seus conteúdos para HTML, essas funções têm o papel de escutar os sinais de alerta gerados pelos valores reativos, para que os outputs sejam recalculados quando os inputs mudam.
+
+### Expressões reativas
+
+Muitas vezes, um aplicativo shiny precisa de passos intermediários, entre o input de origem e o output final. Isto é, precisamos de uma estrutura que receba um valor reativo, faça alguma conta e devolva um resultado, um valor também reativo que será utilizado posteriormente em um *observer*. Essas estruturas são as **expressões reativas**. Elas são nossa peça faltante.
+
+## O disparo de reatividade
 
 Um aplicativo Shiny é composto por um ou mais outputs que podem ser controlados a partir de um ou mais inputs. Sempre que alteramos o valor de um input na tela, uma mensagem é enviada para o servidor onde o aplicativo está hospedado e, dentro da sessão de R, é recebida pela função `server()`. Essa mensagem contém o novo valor desse input, que é transmitido **apenas para os outputs que dependem dele**. Esses outputs são recalculados e os novos resultados são devolvidos para a UI. Chamamos esse processo de **fluxo de reatividade**.
 
@@ -157,21 +233,6 @@ Quando alteramos o valor da Variável A, o seguinte processo acontece:
 
 Faremos isso conhecendo as suas 3 peças fundamentais: os valores reativos, os *observers* e as expressões reativas. Elas serão os temas das próximas secões.
 
-### Valores reativos
-
-Os valores reativos são **a origem do fluxo reativo**. Eles guardam as informações que vêm da UI e disparam um *sinal de alerta* sempre que essas informações mudam. Esse sinal é enviado a qualquer output do app que dependa desses valores e indica que essas saídas devem ser recalculadas.
-
-Embora não tenhamos os apresentas dessa forma, nós já usamos valores reativos em exemplos anteriores. Nos referimos aos inputs, ou melhor, aos valores dentro da lista `input`, na função `server`. Eles são os valores reativos mais comuns, pois estarão presentes em qualquer app. 
-
-### *Observers*
-
-O *sinal de alerta* enviado por um valor reativo sempre que ele sofre uma mudança é o início do fluxo reativo. O fluxo tem sequência com os *observers*, que recebem e interpretam esse sinal. Como resultado, os *observers* buscam o valor atualizado do valor reativo e recalculam as suas saídas, dando fim ao fluxo.
-
-Os *observers* mais comuns, também já utilizados anteriormente, são as funções `render*()`. Elas guardam os códigos que geram os outputs do app, que na maioria dos casos dependem dos valores reativos. Assim, além de renderizar seus conteúdos para HTML, essas funções têm o papel de escutar os sinais de alerta gerados pelos valores reativos, para que os outputs sejam recalculados quando os inputs mudam.
-
-### Expressões reativas
-
-Muitas vezes, um aplicativo shiny precisa de passos intermediários, entre o input de origem e o output final. Isto é, precisamos de uma estrutura que receba um valor reativo, faça alguma conta e devolva um resultado, um valor também reativo que será utilizado posteriormente em um *observer*. Essas estruturas são as **expressões reativas**. Elas são nossa peça faltante.
 
 ### O fluxo em detalhes
 
@@ -243,7 +304,7 @@ Nessa metáfora, a matéria-prima representa os valores reativos (cada material 
 
 Nas próxima seções, falaremos com mais detalhes de cada uma dessas estruturas e das funções que utilizamos para criá-las.
 
-## Diagrama de reatividade: `reaclog`
+## Gráfico de reatividade: `reaclog`
 
 O maior desafio no desenvolvimento de um Shiny app é a construção do fluxo de reatividade. Além de a reatividade ser um conceito abstrato e invisível no código, precisamos não apenas garantir que o app funcione, mas também que funcione adequadamente.
 
