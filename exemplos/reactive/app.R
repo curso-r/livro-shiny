@@ -1,34 +1,35 @@
 library(shiny)
 
 ui <- fluidPage(
-  "Histograma da distribuição normal",
+  "Resultado do sorteio",
   sliderInput(
-    inputId = "num",
+    inputId = "tamanho",
     label = "Selecione o tamanho da amostra",
     min = 1,
     max = 1000,
     value = 100
   ),
-  plotOutput(outputId = "hist"),
-  textOutput(outputId = "media")
+  plotOutput(outputId = "grafico"),
+  textOutput(outputId = "resultado")
 )
 
 server <- function(input, output, session) {
 
   amostra <- reactive({
-    sample(1:10, input$num, replace = TRUE)
+    sample(1:10, input$tamanho, replace = TRUE)
   })
 
-  output$hist <- renderPlot({
-    barplot(table(amostra()))
+  output$grafico <- renderPlot({
+    amostra() |>
+      table() |>
+      barplot()
   })
 
-  output$media <- renderText({
-    contagem <- sort(table(amostra()), decreasing = TRUE)
-    mais_frequente <- names(contagem[1])
-    glue::glue("O número mais sorteado foi {mais_frequente}.")
+  output$resultado <- renderText({
+    contagem <- table(amostra())
+    mais_freq <- names(contagem[which.max(contagem)])
+    glue::glue("O valor mais sorteado foi o {mais_freq}.")
   })
-
 }
 
 shinyApp(ui, server)
