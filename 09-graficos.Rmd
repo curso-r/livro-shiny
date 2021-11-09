@@ -1,0 +1,14 @@
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  fig.align = "center"
+)
+```
+
+# Gráficos
+
+## `plotly`
+
+## `highcharter`
+
+## `echarts4r`
+

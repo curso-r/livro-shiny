@@ -4,7 +4,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Debug: principais erros
+# Debug
 
 ## Erros comuns de programação em R
 
@@ -13,3 +13,8 @@ knitr::opts_chunk$set(
 ## Erros de reatividade
 
 ## Violação de preceitos do Shiny
+
+## O bom e velho método `print`
+
+## A função `browser()`
+

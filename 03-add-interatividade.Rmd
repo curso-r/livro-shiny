@@ -36,7 +36,9 @@ tibble::tribble(~`*Output()`, ~`render*()`,
                 "plotOutput()", "renderPlot()",
                 "tableOutput()", "renderTable()",
                 "textOutput()", "renderText()") %>%
-  knitr::kable(format = "html")
+  reactable::reactable(
+    sortable = FALSE
+  )
 ```
 
 O argumento `outputId` das funções `*Output()` é utilizado para identificarmos cada output dentro da função `server`. Todos os outputs criados ficarão dentro da lista `output`. Veja a seguir, o exemplo de um aplicativo que apresenta um histograma da variável `mpg` da base `mtcars`.

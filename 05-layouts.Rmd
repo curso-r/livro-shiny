@@ -16,6 +16,12 @@ knitr::opts_chunk$set(
 
 ### `navbarPage()`
 
+## Dashboards
+
+### `shinydashboard`
+
+### `bs4Dash`
+
 ## Um pouco sobre CSS
 
 ## Usando Markdown para textos

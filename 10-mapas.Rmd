@@ -4,9 +4,10 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Dashboards
+# Mapas
 
-## `shinydashboard`
+## `leaflet`
 
-## `bs4Dash`
+## `highcharter`
+
 
