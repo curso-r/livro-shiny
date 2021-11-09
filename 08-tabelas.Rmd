@@ -4,8 +4,8 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Tabelas
+# Tabelas
 
-### `DT`
+## `DT`
 
-### `reactable`
+## `reactable`
