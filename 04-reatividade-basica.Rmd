@@ -319,15 +319,17 @@ server <- function(input, output, session) {
 
 ## Visualizando o diagrama de reatividade: `reactlog`
 
-O maior desafio no desenvolvimento de um Shiny app é a construção do fluxo de reatividade. Além de a reatividade ser um conceito abstrato e invisível no código, precisamos não apenas garantir que o app funcione, mas também que funcione adequadamente.
+A construção adequada do diagrama de dependências reativas costuma ser o maior desafio no desenvolvimento de aplicativos Shiny. Quanto mais engrenagens precisam girar juntas dentro de um app, mais complicada pode ser a lógica de programação para que o reatividade funcione de maneira eficiente.
 
 Se ao mudar o valor de um *slider*, esperamos que um gráfico seja atualizado, dois problemas podem surgir: (1) o gráfico não ser recalculado e (2) o gráfico ser recalculado mais de uma vez.
 
-Os dois problemas indicam um fluxo de reatividade mal construído. A diferença é que, enquanto no primeiro caso o app não funciona, no segundo, ignorando-se o comportamento estranho, ele entrega o que se espera dele.
+Os dois problemas indicam um diagrama de reatividade mal construído. A diferença é que, enquanto no primeiro caso o app não funciona, no segundo, ignorando-se o comportamento estranho, ele entrega o que se espera dele.
 
-Para evitar esses problemas (que discutiremos em detalhes no Capítulo \@ref(reatividade2)), podemos imaginar ou desenhar o fluxo de reatividade para investigar onde está a falha. Essa é uma tarefa simples em apps com poucos inputs e outputs, mas extremamente difícil ou inviável em apps complexos.
+> Um app que aparentemente funciona do jeito que gostaríamos pode esconder problemas de reatividade que o deixam mais lento ou com comportamentos estranhos, atrapalhando a experiência de uso.
 
-Nesses casos, ou mesmo nos casos simples, podemos utilizar o pacote `reactlog`. Com ele, além de desenharmos facilmente um diagrama de dependências reativas de qualquer Shiny app, podemos olhar o que acontece por trás das curtinas da reatividade quando executamos o aplicativo.
+Para evitar esses problemas, que discutiremos em detalhes nos Capítulos XXX, podemos imaginar ou desenhar o diagrama de reatividade para investigar onde está a falha. Essa é uma tarefa simples em apps com poucos inputs e outputs, mas extremamente difícil ou inviável em apps complexos.
+
+Nesses casos (ou mesmo nos casos simples), podemos utilizar o pacote `reactlog`. Com ele, podemos visualizar facilmente o diagrama de dependências reativas de qualquer Shiny app e olhar o que acontece por trás das curtinas da reatividade quando executamos o aplicativo.
 
 Antes de mais nada, instale o pacote `reactlog`.
 
@@ -335,7 +337,7 @@ Antes de mais nada, instale o pacote `reactlog`.
 install.packages("reactlog")
 ```
 
-Em seguida, no Console, rode o código abaixo. Isso vai habilitar o `reactlog` para qualquer app que você rodar na sessão de R atual.
+Em seguida, no Console, rode o código abaixo. Isso vai habilitar o `reactlog` para qualquer app que você rodar na atual sessão de R.
 
 ```{r, eval=FALSE}
 options(shiny.reactlog = TRUE) 
@@ -348,7 +350,7 @@ Por fim, rode o seu app e utilize o comando `CTRL + F3` (no Mac, `command + F3`)
 knitr::include_graphics("img/app_hist_normal.png")
 ```
 
-Veja agora o diagrama de reatividade associado a esse app. A forma dos 4 elementos mais a esquerda representa inputs ou valores reativos, a forma do elemento `plotObj` representa expressões reativas e a forma do elemento `output$hist` representa os outputs (ou observadores).
+Veja agora o diagrama de reatividade associado a esse app. A forma dos 4 elementos mais a esquerda representa valores reativos, a forma do elemento `plotObj` representa expressões reativas e a forma do elemento `output$hist` representa observers.
 
 ```{r, echo = FALSE, fig.cap="Diagrama de reatividade do app anterior.", fig.alt = "Diagrama de reatividade do app anterior criado pelo pacote reactlog."}
 knitr::include_graphics("img/reaclog_diagrama_completo.png")
@@ -366,11 +368,13 @@ Em resumo, com um diagrama de reatividade em mãos, podemos:
 
 - ver os inputs dos quais cada output depende e não depende;
 
-- investigar porque o código de um output não é rodado ou roda duas vezes quando acionamos um input do qual ele deveria depender;
+- investigar por que o código de um output não é rodado ou roda duas vezes quando acionamos um input do qual ele deveria depender;
 
 - ter uma visão menos abstrada do fluxo de reatividade e entender melhor o que acontece quando executamos cada parte do nosso app.
 
-Embora o exemplo apresentado tenha um fluxo reativo bem simples, utilize o código a seguir para reproduzir o app. Mexa algumas vezes no *slider* e acesse o driagrama de reatividade. Tente usar os controles de navegação para visualizar cada etapa do ciclo reativo. Ao longo deste capítulo, apresentaremos alguns diagramas mais complexos.
+Embora o exemplo apresentado tenha um diagrama de reatividade bem simples, utilize o código a seguir para reproduzir o app. Mexa algumas vezes no *slider* e acesse o driagrama de reatividade. Tente usar os controles de navegação para visualizar cada etapa do ciclo reativo. 
+
+> Para os exemplos passados e futuros, utilize o `reactlog` sempre que ficar com dúvida sobre o diagrama de reatividade de um app.
 
 ```{r, eval = FALSE}
 library(shiny)
