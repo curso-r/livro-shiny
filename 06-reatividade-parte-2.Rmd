@@ -4,11 +4,86 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Reatividade: UIs reativas {#reatividade2}
+# No controle da reatividade
 
-## Construindo UIs dinamicamente
+No Capítulo 3, vimos que o fluxo de reatividade é disparado por uma mudança em um valor reativo e que termina na atualização de um observer^[Isto é, todos os caminhos de um diagrama de reatividade devem começar com um valore reativo e terminar com um observer]. Também vimos que os valores reativos representam nossos inputs e os observers são as funções `render*()` que criam nossos outputs. Mas inputs e outputs não são a única maneira de criar valores reativos e observers. 
 
-## Funções update
+O pacote `shiny` possui funções para criarmos diretamente valores reativos e observers, o que nos permite desenvolver uma porção de novas funcionalidades. Essas funções serão o foco deste capítulo.
+
+
+## As funções `observe` e `observeEvent`
+
+Os observers são o ponto final de um diagrama de reatividade de um aplicativo Shiny e, sem eles, o fluxo reativo não acontece. As funções `render*()`, que geram os nossos outputs, são o tipo mais comum de observer. Mas eles não são os únicos.
+
+Muitas vezes queremos usar a reatividade para disparar ações que não estão ligadas a geração de outputs, como o registro de informações em bases de dados ou a atualização de elementos da UI.
+
+Nesses casos, podemos utilizar as funções `observe()` e `oberveEvent()`. Elas funcionam de maneira similar às funções `reactive()` e `eventReactive()`, mas em vez de criar expressões reativas, elas são observers.
+
+A função `observe({codigo})` monitora os valores e expressões reativas que estão dentro dela e roda seu código quando algum desses valores são modificados.
+
+A diferença do `observe()` para a função `reactive()` é que a primeira não gera expressões reativas, servindo apenas para códigos que têm efeitos colaterais.
+
+Essa função é muito utilizada com as funções da família `update*()`, que servem para atualizar valores de um input na UI.
+
+Na segunda caixa de seleção do exemplo a seguir, queremos selecionar apenas os filmes do(a) diretor(a) que selecionamos na primeira. Veja que usamos o texto `Carregando...` como um *placeholder* para o segundo `selectInput()`.
+
+```{r, eval = FALSE}
+ui <- fluidPage(
+  selectInput(
+    "dir",
+    "Selecione um(a) diretor(a)",
+    choices = sort(unique(imdb$diretor))
+  ),
+  selectInput(
+    "filme",
+    "Selecione um filme",
+    choices = "Carregando..."
+  )
+)
+```
+
+No `server`, atualizamos as escolhas da segunda caixa de seleção com a função `updateSelectInput()`. Veja que, como essa função está dentro de um `observe`, esse código será rodado novamente sempre que o valor de `input$dir` mudar.
+
+```{r, eval = FALSE}
+server <- function(input, output, session) {
+  observe({
+    opcoes <- imdb |> 
+      dplyr::filter(diretor == input$dir) |> 
+      dplyr::pull(titulo)
+    updateSelectInput(
+      session,
+      inputId = "filme",
+      choices = opcoes
+    )
+  })
+}
+```
+
+A função `observeEvent()` funciona assim como a `observe()`, mas ela escuta apenas um valor ou expressão reativa, que é definido em seu primeiro argumento, assim como na função `eventReactive()`.
+
+Ela é muito utiliza para disparar ações, como gravar informações em uma base de dados, a partir de botões.
+
+No exemplo a seguir, queremos salvar o e-mail de uma pessoa quando ela clicar no botão "Enviar dados". A função `observeEvent()` roda o código definido dentro dela quando o botão é clicado, salvando o e-mail em um arquivo de texto.
+
+```{r, eval = FALSE}
+ui <- fluidPage(
+  textInput("email", "Informe seu e-mail"),
+  actionButton("enviar", "Enviar dados")
+)
+
+server <- function(input, output, session) {
+  
+  observeEvent(input$enviar, {
+    write(input$email, "emails.txt", append = TRUE)
+  })
+}
+```
+
+As funções `observe()` e `oberveEvent()` aumentam bastante o leque de opções dos nossos aplicativos. Agora conseguimos criar fluxos reativos que não estão associados necessariamente a um output. Nessa linha, no nosso próximo post sobre reatividade, falaremos sobre como criar valores reativos que não estão associados a inputs.
 
 ## Validação
+
+## As funções `reactiveVal` e `reactiveValues`
+
+
 
