@@ -6,15 +6,92 @@ knitr::opts_chunk$set(
 
 # Debug
 
-## Erros comuns de programação em R
+## Erros comuns
 
-## Erros de sintaxe do Shiny
+##### Erros comuns de programação em R
 
-## Erros de reatividade
+Erros comuns de programação em R, como chamar objetos ou funções inexistentes, operações não permitidas ou má utilização de funções costumam devolver mensagens de erro informativas. O primeiro passo para resolver qualquer problema de programação de Shiny (ou de R em geral) é ler a mensagem de erro e tentar interpretá-la.
 
-## Violação de preceitos do Shiny
+#####Erros de sintaxe do Shiny
 
-## O bom e velho método `print`
+Erros de sintaxe no Shiny. Em geral, o app não roda e receberemos a mensagem de erro `unexpected symbol`. Causados principalmente por falta ou excesso de vírgulas, parênteses ou chaves. 
 
-## A função `browser()`
+##### Erros de reatividade
+
+Usar uma expressão reativa fora de uma função reativa. O app não vai rodar e você verá a seguinte mensagem de erro `Can't access reactive value 'tamanho' outside of reactive consumer..`.
+
+##### Violação de premissas do Shiny
+
+Você só pode *ler* valores da lista `input`. Se você tentar gravar um valor diretamente, será retornado um erro. A lista `input` será sempre uma *cópia* das ações do usuário no navegador.
+
+Você só pode *escrever* valores na lista `output`. Se você tentar ler um valor, será retornado um erro.
+
+Não fazer a correspondência certa entre as funções `_Output()` e `render_()`. O app vai rodar, mas a visualização não ser mostrada. Em algumas situações, uma mensagem de erro será retornada. Em outras, o erro será silencioso.
+
+Errar o nome de um input (usar um input que não existe). O app vai rodar e, geralmente, retornar um erro relacionado a uma função receber um valor que não deveria ser NULL.
+
+Errar o nome de um output. O app vai rodar e não vai retornar erro. O output não será gerado.
+
+Usar o mesmo ID para dois outputs. O app vai rodar e não vai retornar erro. Os outputs não serão gerados.
+
+Esquecer os parênteses ao chamar uma expressão reativa (objeto criado pelas funções `reactive()` e `eventReactive()`). Normalmente receberemos uma mensagem indicando que a classe de algum objeto está errada, como  `'x' must be numeric` ou a famosa mensagem `cannot coerce type 'closure' to vector of type ...`.
+
+## Encontrando erros 
+
+### O bom e velho método `print`
+
+### A função `browser()`
+
+Quando as mensagens de erro não nos ajudarem, podemos usar a função `browser()` para espiarmos o que está acontecendo dentro do server. 
+
+Basta colocar essa função onde você suspeita que o erro está acontecendo e, ao rodar o app, você poderá utilizar o Console para avaliar os objetos que estiverem no Environment. 
+
+Enquanto a função `browser()` estiver ativa, o app ficará congelado.
+
+```{r, eval=FALSE}
+# server
+valor_reativo <- reactive({
+  sample(1:10, 1)
+})
+
+output$plot <- renderPlot({
+  browser() #<<
+  hist(rnorm(100, valor_reativo, 1))
+})
+
+```
+
+```{r}
+# No console
+
+# Browse[1]> valor_reativo()
+# [1] 4
+```
+
+Embora você possa colocar a função browser em qualquer lugar no server, é melhor colocá-la dentro de uma função reativa. Caso contrário, o `browser()` só será chamado na inicialização do app e você não conseguirá avaliar valores reativos.
+
+Veja o exemplo a seguir.
+
+```{r, eval=FALSE}
+# server
+amostra <- reactive({
+  sample(1:10, input$n)
+})
+
+browser() #<<
+
+output$plot <- renderPlot({
+  amostra() |> 
+    table() |> 
+    barplot()
+})
+
+```
+
+```{r}
+# No console
+
+# Browse[1]> amostra()
+#Error : Can't access reactive value 'amostra' outside of reactive consumer.
+```
 
