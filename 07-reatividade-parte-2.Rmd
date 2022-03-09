@@ -4,7 +4,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# No controle da reatividade
+# No controle da reatividade {#reatividade2}
 
 No Capítulo 3, vimos que o fluxo de reatividade é disparado por uma mudança em um valor reativo e que termina na atualização de um observer^[Isto é, todos os caminhos de um diagrama de reatividade devem começar com um valore reativo e terminar com um observer]. Também vimos que os valores reativos representam nossos inputs e os observers são as funções `render*()` que criam nossos outputs. Mas inputs e outputs não são a única maneira de criar valores reativos e observers. 
 

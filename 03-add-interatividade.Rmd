@@ -7,9 +7,9 @@ library(magrittr)
 
 # Adicionando interatividade
 
-A interatividade de um aplicativo Shiny é dada pela relação de *inputs* e *outputs*. Os inputs permitem que a pessoa usando o aplicativo envie valores para o servidor, que podem ser utilizados na construção dos outputs, isto é, nas visualizações do app.
+A interatividade de um aplicativo Shiny é dada pela relação de *inputs* e *outputs*. Os inputs permitem a pessoa usando o aplicativo enviar informação para o servidor, que é utilizada na construção dos outputs devolvidos para a tela.
 
-A seguir, mostraremos como adicionar inputs e outputs a um Shiny app. Começaremos com os outputs para darmos nossos primeiros passos na construção da função `server`.
+A seguir, mostraremos como adicionar inputs e outputs a um Shiny app. Começaremos com os outputs, dando nossos primeiros passos na construção da função `server`.
 
 ## Adicionando outputs
 
@@ -72,9 +72,14 @@ No código acima:
 
 - o histograma é gerado com o código `hist(mtcars$mpg)`.
 
-Rode o código anterior para ver o aplicativo resultante. Repare que, embora tenhamos uma visualização sendo construída no servidor, ainda não temos interatividade, isto é, não conseguimos mudar nada no conteúdo dessa visualização.
+Rode o código anterior para ver o aplicativo resultante. Repare que, embora tenhamos uma visualização sendo construída no servidor, ainda não temos interatividade, isto é, não conseguimos mudar nada no conteúdo dessa visualização a partir da UI.
 
-> **Importante!** Podemos apenas escrever na lista `output`. Se tentarmos ler um valor dessa lista, o Shiny retornará um erro.
+*Importante!** Podemos apenas escrever na lista `output`. Se tentarmos ler um valor dessa lista, o Shiny retornará um erro.
+
+```{r, eval = FALSE}
+output$histograma
+#> Error in $.shinyoutput: Reading from shinyoutput object is not allowed.
+```
 
 Para fechar o ciclo da interatividade, precisamos incluir inputs.
 
@@ -84,7 +89,7 @@ Inputs representam as *entradas* do nosso aplicativo, isto é, a maneira como in
 
 Você pode conferir a lista de widgets do pacote `shiny` [nesta página](https://shiny.rstudio.com/gallery/widget-gallery.html). Repare que no campo `Current Value(s)` é mostrado qual valor será levado para dentro da função `server` em cada caso.
 
-Para criar esses widgets utilizamos as famílias de funções `*Input()` ou `*Button`. De forma análoga ao `outputId` das funções `*Output()`, todas essas funções possuem `inputId` como primeiro argumento, que recebe uma string e será utilizado para acessar cada input dentro da função `server`. Isso implica que **dois inputs não podem ter o mesmo `inputId`**. Apenas o primeiro input funcionará caso você crie dois ou mais `inputId` repetidos.
+Para criar esses widgets utilizamos as famílias de funções `*Input()` ou `*Button`. De forma análoga ao `outputId` das funções `*Output()`, todas essas funções possuem `inputId` como primeiro argumento, que recebe uma string e será utilizado para acessar dentro da função `server` cada um dos inputs criados. Isso implica que **dois inputs não podem ter o mesmo `inputId`**. Apenas o primeiro input funcionará caso você crie dois ou mais `inputId` repetidos.
 
 No código a seguir, incluímos no app da seção anterior uma caixa de seleção que permite a escolha da variável que será utilizada no histograma. Rode esse app e veja que o gráfico é recalculado sempre que alteramos a variável na caixa de seleção.
 
@@ -135,7 +140,7 @@ mtcars[["mpg"]]
 hist(mtcars[["mpg"]])
 ```
 
-O código a seguir gera um app com dois inputs e dois outputs. Rode o app e veja que input está associado a apenas um output.
+O código a seguir gera um app com dois inputs e dois outputs. Rode o app e veja que cada input está associado a apenas um output.
 
 ```{r, eval = FALSE}
 library(shiny)
