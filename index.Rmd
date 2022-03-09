@@ -42,7 +42,7 @@ Contudo, o grande poder do Shiny está em não limitar as posssibilidades apenas
 
 Por possuir um paradigma de programação diferente do que estamos acostumados no R, o Shiny não é o assunto mais indicado para quem está começando a estudar a linguagem. Se você é uma pessoa iniciante em R, recomendamos ficar bem confortável com alguns conceitos base antes de embarcar no Shiny.
 
-Em específico, este livro assume que você já tem conhecimento do operador *pipe* (`%>%`) e dos principais pacotes do tidyverse (`readr`, `dplyr`, `tidyr`,`ggplot2`, `stringr` e `lubridate`). Se esses temas não são familiares para você, indicamos a leitura do livro [Ciência de Dados em R](https://livro.curso-r.com/) antes de prosseguir.
+Em específico, este livro assume que você já tem conhecimento de construção de funções, do operador *pipe* (`%>%` ou `|>`) e dos principais pacotes do tidyverse (`readr`, `dplyr`, `tidyr`,`ggplot2`, `stringr` e `lubridate`). Se esses temas não são familiares para você, indicamos a leitura do livro [Ciência de Dados em R](https://livro.curso-r.com/) antes de prosseguir.
 
 Se você já programa em R e gostaria de começar a programar em Shiny, você pode iniciar a leitura desde o Capítulo 1. Você irá aprender, sobretudo,
 

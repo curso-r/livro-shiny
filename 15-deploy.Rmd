@@ -4,7 +4,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Deploy
+# Deploy {#deploy}
 
 ## shinyapps.io
 
