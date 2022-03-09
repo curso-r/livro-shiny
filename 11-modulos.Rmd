@@ -4,7 +4,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Módulos
+# Módulos {#modulos}
 
 ## O que são módulos?
 

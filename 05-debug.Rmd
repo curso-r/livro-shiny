@@ -12,7 +12,7 @@ knitr::opts_chunk$set(
 
 Erros comuns de programação em R, como chamar objetos ou funções inexistentes, operações não permitidas ou má utilização de funções costumam devolver mensagens de erro informativas. O primeiro passo para resolver qualquer problema de programação de Shiny (ou de R em geral) é ler a mensagem de erro e tentar interpretá-la.
 
-#####Erros de sintaxe do Shiny
+##### Erros de sintaxe do Shiny
 
 Erros de sintaxe no Shiny. Em geral, o app não roda e receberemos a mensagem de erro `unexpected symbol`. Causados principalmente por falta ou excesso de vírgulas, parênteses ou chaves. 
 
