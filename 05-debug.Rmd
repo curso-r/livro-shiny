@@ -8,7 +8,9 @@ knitr::opts_chunk$set(
 
 Na programação, *debug*^[Também conhecido como *debugging* (depuração, em português).] se refere ao processo de encontrar e corrigir erros em códigos. 
 
-No desenvolvimento de aplicativos Shiny, esse processo é um pouco mais complicado em comparação com outras utilizações da linguagem R (como a construção de um gráfico ou o ajuste de um modelo). Isso porque nem sempre conseguimos rodar diretamente o código que estamos escrevendo. A maior parte do código só pode ser avaliado com o app em funcionamento, o que nos obriga a de fato rodar o app para verificar se tudo vai funcionar. No entanto, quando encontramos um erro, nem sempre fica claro onde ele aconteceu.
+No desenvolvimento de aplicativos Shiny, esse processo é um pouco mais complicado em comparação com outras utilizações da linguagem R (como a construção de um gráfico ou o ajuste de um modelo). O código especificado no `server` do nosso aplicativo só é avaliado com o app em funcionamento, por trás de um servidor web e de toda a infraestrutura (JavaScript) do Shiny. 
+
+Isso quer dizer que quase nunca conseguimos testar diretamente os códigos na função `server` e precisamos rodar o app para ver se ele de fato vai funcionar. No entanto, mesmo quando o aplicativo roda, pode ser que ele não esteja funcionando adequadamente. E quando recebemos mensagens de erro, nem sempre fica claro onde ele aconteceu.
 
 Neste capítulo descreveremos erros comuns do desenvolvimento de aplicativos Shiny e apresentaremos estratégias para facilitar o processo de debug.
 
@@ -51,6 +53,36 @@ Já quando usamos o mesmo ID para dois outputs, o app vai rodar e não vai retor
 ## Encontrando erros 
 
 ### O bom e velho método `print`
+
+Uma maneira simples e eficiente de olhar o que está acontecendo dentro do `server` enquanto o app está rodando é imprimir no Console mensagens ou valores que nos dê pistas sobre a validade do nosso código.
+
+No Shiny, a melhor maneira de fazer isso é utilizando a função `cat(file = stderr(), "mensagem")`. Utilizamos essa função em detrimento das funções `print("mensagem")` ou simplesmente `cat("mensagem")` pois essas duas não vão funcionar em alguns contextos^[Como dentro da função `renderPrint()`.]. O argumento `file = stderr()` garante que a mensagem será mostrada na conexão padrão para mensagens de erro (no Console, em geral).
+
+Esse método é muito útil para saber se ou quantas vezes o Shiny está pessando por uma determinada parte do código ou para retornar e validar valores calculados dentro do servidor.
+
+Exemplos:
+
+```{r, eval = FALSE}
+# Verificando quando o Shiny passa pelo reactive
+dados_filtrados <- reactive({
+  cat(file = stderr(), "O código no observe foi executado!\n")
+   dados |> 
+     dplyr::filter(UF %in% input$uf)
+})
+
+
+# Verificando número de cidades antes de gerar o gráfico
+output$grafico <- renderPlot({
+  cat(file = stderr(), "Fazendo gráfico para a renda per capita média de", nrow(dados_filtrados()), "cidades\n")
+  dados_filtrados() |> 
+    dplyr::group_by(ano) |> 
+    dplyr::summarise(renda_per_capita_media = mean(renda_per_capita)) |> 
+    ggplot2::ggplot(ggplot2::aes(x = ano, y = renda_per_capita_media)) +
+    ggplot2::geom_line()
+})
+```
+
+O `\n` ao final das mensagens garante que a próxima mensagem no Console comece em uma nova linha.
 
 ### A função `browser()`
 
