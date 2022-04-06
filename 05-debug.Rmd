@@ -86,11 +86,11 @@ O `\n` ao final das mensagens garante que a próxima mensagem no Console comece 
 
 ### A função `browser()`
 
-Quando as mensagens de erro não nos ajudarem, podemos usar a função `browser()` para espiarmos o que está acontecendo dentro do server. 
+Em algumas situações, a gente realmente gostaria de estar dentro da função `server` durante a sua execução para avaliar quais valores nossos códigos estão recebendo e quais valores eles estão gerando. Graças à função `browser()` isso é possível!
 
-Basta colocar essa função onde você suspeita que o erro está acontecendo e, ao rodar o app, você poderá utilizar o Console para avaliar os objetos que estiverem no Environment. 
+Com a função `browser()`, podemos espiar o que está acontecendo dentro do server quando rodamos o nosso aplicativo. Basta colocar essa função onde você suspeita que o problema está acontecendo e, quando o Shiny passar por ela, a execução do app será pausada e o Console ficará disponível para testes. 
 
-Enquanto a função `browser()` estiver ativa, o app ficará congelado.
+Colocando a função `browser()` dentro de um consumidor reativo (funções da família `render*()`, por exemplo), você poderá acessar valores da lista `input` ou expressões reativas geradas com `reactive()` ou `eventReactive()`.
 
 ```{r, eval=FALSE}
 # server
@@ -112,30 +112,4 @@ output$plot <- renderPlot({
 # [1] 4
 ```
 
-Embora você possa colocar a função browser em qualquer lugar no server, é melhor colocá-la dentro de uma função reativa. Caso contrário, o `browser()` só será chamado na inicialização do app e você não conseguirá avaliar valores reativos.
-
-Veja o exemplo a seguir.
-
-```{r, eval=FALSE}
-# server
-amostra <- reactive({
-  sample(1:10, input$n)
-})
-
-browser() #<<
-
-output$plot <- renderPlot({
-  amostra() |> 
-    table() |> 
-    barplot()
-})
-
-```
-
-```{r}
-# No console
-
-# Browse[1]> amostra()
-#Error : Can't access reactive value 'amostra' outside of reactive consumer.
-```
-
+Para voltar sair do `browser` e voltar à execução do app, basta clicar no botão `Continue`, no topo do Console. Clicando no botão `Stop`, tanto o `browser` quanto a execução do app serão finalizadas. Após encontrar e solucionar o problema, não se esqueça de remover a função `browser()` do seu código.
