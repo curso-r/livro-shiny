@@ -95,6 +95,95 @@ Conforme aprendemos e utilizamos o Shiny, inevitavelmente aprendemos bastante so
 
 ## Bootstrap
 
+Hoje em dia, uma página Web pode ser vista em dispositivos de diferentes tamanhos (celulares, tablets, notebooks, televisões...) e o layout da página deve se adaptar à enorme variedade de tamanho de telas. Isso é um grande desafio para quem desenvolve.
+
+Uma solução seria produzir uma versão para telas pequenas e uma versão para telas grandes, direcionando as visitas para a versão adequada a depender do dispositivo utilizado. Muitos sites utilizam essa alternativa, e você pode verificar isso pela URL. Páginas próprias para dispositivos *mobile* possuem um `m.` no início da URL.
+
+Nem sempre essa alternativa é viável, pois produzir duas versões de uma página ou aplicação Web pode ser muito custoso. Nesses casos, a solução é produzir um layout *responsivo*, isto é, que se adapte a depender do tamanho da tela. E aí que entra o **Bootstrap**.
+
+O [Bootstrap Framework](https://getbootstrap.com.br/docs/4.1/getting-started/introduction/) é uma coleção de códigos CSS que nos ajudam a construir páginas Web *responsíveis*. Boa parte da internet hoje em dia é construída em cima do Bootstrap, e nossos aplicativos Shiny não serão diferentes.
+
+O Shiny importa a versão 3 do Bootstrap, o quer dizer que podemos utilizar todo o ferramental desse framework em nossos apps. Se você não sabe CSS, não tem problema. Podemos aproveitar todo o poder do Bootstrap dentro do Shiny apenas aprendendo a usar algumas funções de R.
+
+Antes de vermos essas funções, precisamos entender como funciona o *grid system*. O Bootstrap estabelece que:
+
+1. os elementos em uma página serão dispostos primeiramente em linhas;
+
+2. cada nova linha será colocada embaixo da anterior;
+
+3. cada linha pode ser dividida em até 12 colunas; independentemente do tamanho da tela.
+
+4. cada coluna pode ter até 12 unidades de comprimento, sendo que a soma dos comprimentos das colunas de uma linha deve ser no máximo 12.
+
+5. quando a tela for pequena o suficiente^[Você pode conferir os tamanhos limites na documentação do Bootstrap: https://getbootstrap.com.br/docs/4.1/getting-started/introduction/)] todas as colunas passam a ter comprimento 12.
+
+Em resumo, isso significa que, quando estivermos em telas pequenas, todos os elementos que hora estavam lado a lado, passam a ficar um embaixo do outro.
+
+```{r, out.width="100%", echo = FALSE}
+knitr::include_graphics("img/gridsystem.jpg")
+```
+
+Em resumo, o conceito por trás do Boostrap estabelece que o layout dos nossos apps serão formados por linhas com até 12 colunas cada. O comprimento de cada coluna pode variar de 1 a 12 unidades.
+
+No Shiny, para criar novas linhas, utilizamos a função `fluidRow()`. 
+
+Para criar colunas dentro de uma linha, utilizamos a função `column()`. Essa função tem dois argumentos: `width` e `offset`. O primeiro determina o comprimento da coluna (de 1 a 12). O segundo indica quanto espaço horizontal gostaríamos de "pular" antes de começar a nossa coluna. A função `column()` é sempre utilizada dentro da função `fluidRow()`.
+
+Seguindo esse esquema, passamos a colocar o conteúdo da página dentro das colunas, isto é, dentro da função `column()`.
+
+```{r, echo = FALSE, out.width="100%"}
+knitr::include_graphics("img/gridsystem2.png")
+```
+
+Utilizando essas funções, podemos mudar o exemplo da seção anterior da seguinte maneira:
+
+```{r, results='asis', eval = FALSE}
+library(shiny)
+#ui
+fluidPage(
+  fluidRow(
+    column(
+      width = 8,
+      offset = 2,
+      h1("Esse é o título do meu app!", align = "center")
+    ),
+    column(
+      width = 2,
+      img(src = "img/logo.png", width = "100%")
+    )
+  ),
+  hr(),
+  h3("Sobre"),
+  fluidRow(
+    column(
+      width = 6,
+      p("Lorem ipsum", tags$em("dolor sit amet", .noWS = "after"), ", consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
+    ),
+    column(
+      width = 6,
+      p(strong("Lorem ipsum dolor"), "sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
+    )
+  ),
+  hr(),
+  fluidRow(
+    column(
+      width = 6,
+      offset = 3,
+      img(src = "img/logo.png", width = "100%")
+    )
+  )
+)
+```
+
+```{r, echo = FALSE}
+knitr::include_graphics("img/app_bootstrap.png")
+```
+
+<br>
+<br>
+
+Repare que agora a imagem no inferior da página foi centralizada utilizando as funções `fluidRow()` e `column()`. Não foi mais necessário definir CSS diretamente para realizar essa tarefa. Como exercício, construa um app com a UI do código anterior e veja o que acontece com a página conforme você diminui o comprimento da tela.
+
 ## Layouts prontos
 
 ### `sidebarLayout()`
